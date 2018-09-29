@@ -28,6 +28,8 @@ public:
 
 	void ReleaseStateMachine();
 
+	void Reload(){ }
+
 public:
 	UPROPERTY()
 		class UFStateMachine* StateMachine = nullptr;
