@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FPlayer.h"
+#include "FStateMachine.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -36,6 +37,8 @@ void AFPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	StateMachine->ChangeState(UFSPlayerBaseMove::StaticClass());
+
 	if (APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0))
 	{
 		controller->bShowMouseCursor = true;
@@ -45,6 +48,20 @@ void AFPlayer::BeginPlay()
 void AFPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+}
+
+
+void AFPlayer::SetupPlayerInputComponent(class UInputComponent* inputComponent)
+{
+	Super::SetupPlayerInputComponent(inputComponent);
+
+	inputComponent->BindAxis("MoveForward", this, &AFPlayer::MoveForward);
+	inputComponent->BindAxis("MoveRight", this, &AFPlayer::MoveRight);
+}
+
+void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
+{
 	if (APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0))
 	{
 		FHitResult hit;
@@ -52,7 +69,7 @@ void AFPlayer::Tick(float DeltaTime)
 		FRotator rotation = GetMesh()->GetRelativeTransform().Rotator();
 		FVector direction = hit.Location - GetActorLocation();
 		FVector directionXY = FVector(direction.X, direction.Y, 0.f);
-		
+
 		float offset = (directionXY.Rotation().Yaw - rotation.Yaw) / 180.f;
 		if (FMath::Abs(offset) > 1.f)
 		{
@@ -89,21 +106,18 @@ void AFPlayer::Tick(float DeltaTime)
 	}
 }
 
-
-void AFPlayer::SetupPlayerInputComponent(class UInputComponent* inputComponent)
-{
-	Super::SetupPlayerInputComponent(inputComponent);
-
-	inputComponent->BindAxis("MoveForward", this, &AFPlayer::MoveForward);
-	inputComponent->BindAxis("MoveRight", this, &AFPlayer::MoveRight);
-}
-
 void AFPlayer::MoveForward(float value)
 {
-	AddMovementInput(FVector(1.f, 0.f, 0.f), value);
+	if (StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
+	{
+		AddMovementInput(FVector(1.f, 0.f, 0.f), value);
+	}
 }
 
 void AFPlayer::MoveRight(float value)
 {
-	AddMovementInput(FVector(0.f, 1.f, 0.f), value);
+	if (StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
+	{
+		AddMovementInput(FVector(0.f, 1.f, 0.f), value);
+	}
 }

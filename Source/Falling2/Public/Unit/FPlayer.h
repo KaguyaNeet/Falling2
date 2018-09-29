@@ -42,6 +42,8 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* inputComponent) override;
 
+	void PlayerBaseAnimUpdate(float DeltaTime);
+
 private:
 	void MoveForward(float value);
 	void MoveRight(float value);
