@@ -8,3 +8,9 @@ void UFStateBase::Initialize(AFBaseUnit* owner)
 {
 	StateOwner = owner;
 }
+
+
+void UFStateBase::Release()
+{
+	StateOwner = nullptr;
+}

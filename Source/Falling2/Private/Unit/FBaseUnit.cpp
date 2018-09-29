@@ -11,14 +11,15 @@ AFBaseUnit::AFBaseUnit()
 	PrimaryActorTick.bCanEverTick = true;
 
 
-	StateMachine = NewObject<UFStateMachine>(this, UFStateMachine::StaticClass());
+	
 }
 
 // Called when the game starts or when spawned
 void AFBaseUnit::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	StateMachine = NewObject<UFStateMachine>(this, UFStateMachine::StaticClass(), UFStateMachine::StaticClass()->GetFName());
 }
 
 // Called every frame
@@ -34,5 +35,11 @@ void AFBaseUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AFBaseUnit::ReleaseStateMachine()
+{
+	StateMachine->Release();
+	StateMachine = nullptr;
 }
 

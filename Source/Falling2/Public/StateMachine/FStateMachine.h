@@ -18,8 +18,10 @@ class FALLING2_API UFStateMachine : public UObject
 	GENERATED_BODY()
 	
 public:
-	TMap<UClass*, class UFStateBase*> States;
-	UFStateBase* CurrentState = nullptr;
+	UPROPERTY()
+		TArray<UFStateBase*> States;
+	UPROPERTY()
+		UFStateBase* CurrentState = nullptr;
 
 public:
 	UFStateMachine();
@@ -28,6 +30,8 @@ public:
 
 	void ChangeState(UClass* newState);
 	void UpdateStateMachine(float DeltaTime);
+
+	void Release();
 
 
 	

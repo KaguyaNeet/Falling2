@@ -23,5 +23,5 @@ public:
 	virtual void UpdateState(float DeltaTime){ }
 	virtual void ExitState(){ }
 	
-	
+	virtual void Release();
 };

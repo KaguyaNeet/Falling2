@@ -2,6 +2,7 @@
 
 #include "FStateMachine.h"
 #include "FStateBase.h"
+#include "FBaseUnit.h"
 
 
 UFStateMachine::UFStateMachine()
@@ -11,7 +12,7 @@ UFStateMachine::UFStateMachine()
 
 UClass * UFStateMachine::GetCurrentState()
 {
-	return CurrentState->StaticClass();
+	return (nullptr != CurrentState) ? CurrentState->GetClass() : nullptr;
 }
 
 bool UFStateMachine::CheckState(UClass * newState)
@@ -20,16 +21,30 @@ bool UFStateMachine::CheckState(UClass * newState)
 	{
 		return false;
 	}
-	return CurrentState->StaticClass() == newState ? true : false;
+	UClass* currentClass = CurrentState->GetClass();
+	bool result =  currentClass == newState ? true : false;
+	return result;
 }
 
 void UFStateMachine::ChangeState(UClass* newState)
 {
-	UFStateBase* state = *States.Find(newState);
+	if (nullptr == newState)
+		return;
+	UFStateBase* state = nullptr;
+	for (auto it : States)
+	{
+		if (it->GetClass() == newState)
+		{
+			state = it;
+			break;
+		}
+	}
 	if (nullptr == state)
 	{
-		state = NewObject<UFStateBase>(this, newState);
-		States.Add(newState) = state;
+		state = NewObject<UFStateBase>(this, newState, newState->GetFName());
+		AFBaseUnit* unit = Cast<AFBaseUnit>(GetOuter());
+		state->Initialize(unit);
+		States.Add(state);
 	}
 	if (nullptr != CurrentState)
 	{
@@ -41,6 +56,17 @@ void UFStateMachine::ChangeState(UClass* newState)
 
 void UFStateMachine::UpdateStateMachine(float DeltaTime)
 {
+	if (nullptr == CurrentState)
+		return;
 	CurrentState->UpdateState(DeltaTime);
+}
+
+void UFStateMachine::Release()
+{
+	for (UINT8 i = 0; i < States.Num(); ++i)
+	{
+		States[i] = nullptr;
+	}
+	CurrentState = nullptr;
 }
 

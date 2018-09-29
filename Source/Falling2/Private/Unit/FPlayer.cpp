@@ -37,7 +37,10 @@ void AFPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StateMachine->ChangeState(UFSPlayerBaseMove::StaticClass());
+	if (nullptr != StateMachine)
+	{
+		StateMachine->ChangeState(UFSPlayerBaseMove::StaticClass());
+	}
 
 	if (APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0))
 	{
@@ -108,7 +111,7 @@ void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 
 void AFPlayer::MoveForward(float value)
 {
-	if (StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
+	if (nullptr != StateMachine && StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
 	{
 		AddMovementInput(FVector(1.f, 0.f, 0.f), value);
 	}
@@ -116,7 +119,7 @@ void AFPlayer::MoveForward(float value)
 
 void AFPlayer::MoveRight(float value)
 {
-	if (StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
+	if (nullptr != StateMachine && StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
 	{
 		AddMovementInput(FVector(0.f, 1.f, 0.f), value);
 	}
