@@ -30,9 +30,16 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PlayerProperty")
 		bool RightTurn = false;
 
+	UPROPERTY(EditAnywhere, Category = "PlayerProperty")
+		float RollingDistance = 1000.f;
+	UPROPERTY(EditAnywhere, Category = "PlayerProperty")
+		float LifeTime = 1.f;
+
+	FVector Direction = FVector::ZeroVector;
 private:
 	
 	FHitResult lastHit;
+	
 
 public:
 	AFPlayer();
@@ -52,6 +59,8 @@ private:
 	void LeftMouseButtonUp();
 	void RightMouseButtonDown();
 	void RightMouseButtonUp();
+
+	void TriggerRolling();
 	
 	
 };

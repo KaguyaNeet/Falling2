@@ -67,6 +67,7 @@ void AFPlayer::SetupPlayerInputComponent(class UInputComponent* inputComponent)
 	inputComponent->BindAction("LeftMouseButton", IE_Released, this, &AFPlayer::LeftMouseButtonUp);
 	inputComponent->BindAction("RightMouseButton", IE_Pressed, this, &AFPlayer::RightMouseButtonDown);
 	inputComponent->BindAction("RightMouseButton", IE_Released, this, &AFPlayer::RightMouseButtonUp);
+	inputComponent->BindAction("Space", IE_Pressed, this, &AFPlayer::TriggerRolling);
 }
 
 void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
@@ -77,6 +78,7 @@ void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 		controller->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, true, hit) ? lastHit = hit : hit = lastHit;
 		FRotator rotation = GetMesh()->GetRelativeTransform().Rotator();
 		FVector direction = hit.Location - GetActorLocation();
+		Direction = direction;
 		FVector directionXY = FVector(direction.X, direction.Y, 0.f);
 
 		float offset = (directionXY.Rotation().Yaw - rotation.Yaw) / 180.f;
@@ -153,4 +155,13 @@ void AFPlayer::RightMouseButtonDown()
 
 void AFPlayer::RightMouseButtonUp()
 {
+}
+
+void AFPlayer::TriggerRolling()
+{
+	if (nullptr != StateMachine && StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
+	{
+		FVector direction = GetVelocity().Size() <= 0.f ? Direction : GetVelocity();
+		Rolling(LifeTime, RollingDistance, direction);
+	}
 }

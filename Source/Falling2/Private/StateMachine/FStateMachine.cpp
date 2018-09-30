@@ -26,10 +26,10 @@ bool UFStateMachine::CheckState(UClass * newState)
 	return result;
 }
 
-void UFStateMachine::ChangeState(UClass* newState)
+UFStateBase* UFStateMachine::ChangeState(UClass* newState)
 {
 	if (nullptr == newState)
-		return;
+		return CurrentState;
 	UFStateBase* state = nullptr;
 	for (auto it : States)
 	{
@@ -52,6 +52,7 @@ void UFStateMachine::ChangeState(UClass* newState)
 	}
 	state->EnterState();
 	CurrentState = state;
+	return CurrentState;
 }
 
 void UFStateMachine::UpdateStateMachine(float DeltaTime)

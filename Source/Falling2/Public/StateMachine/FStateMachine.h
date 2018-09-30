@@ -4,6 +4,7 @@
 
 #include "FStateBase.h"
 #include "FSPlayerBaseMove.h"
+#include "FSRolling.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -28,7 +29,7 @@ public:
 	UClass* GetCurrentState();
 	bool CheckState(UClass* newState);
 
-	void ChangeState(UClass* newState);
+	UFStateBase* ChangeState(UClass* newState);
 	void UpdateStateMachine(float DeltaTime);
 
 	void Release();

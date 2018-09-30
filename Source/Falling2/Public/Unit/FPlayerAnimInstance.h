@@ -20,6 +20,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void Tick(float DeltaTime);
+	UFUNCTION(BlueprintCallable)
+		void EndRolling();
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "Property")
@@ -38,5 +40,11 @@ protected:
 		bool isRightTurn = false;
 	UPROPERTY(BlueprintReadOnly, Category = "Property")
 		bool isIdleTurn = false;
+	UPROPERTY(BlueprintReadOnly, Category = "Property")
+		bool isRolling = false;
+	UPROPERTY(BlueprintReadOnly, Category = "Property")
+		bool isFrontRolling = true;
+	UPROPERTY(BlueprintReadOnly, Category = "Property")
+		float RollingDirection = 0.f;
 	
 };
