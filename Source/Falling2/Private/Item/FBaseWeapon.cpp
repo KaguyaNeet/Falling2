@@ -6,6 +6,9 @@
 
 #include "Classes/Components/SkeletalMeshComponent.h"
 #include "Classes/Components/ArrowComponent.h"
+#include "Classes/Particles/ParticleSystemComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 AFBaseWeapon::AFBaseWeapon()
 {
@@ -31,6 +34,8 @@ void AFBaseWeapon::Tick(float DeltaTime)
 void AFBaseWeapon::EquipWeapon(class AFBaseUnit* owner)
 {
 	WeaponOwner = owner;
+	SetActorRelativeLocation(WeaponLocation);
+	SetActorRelativeRotation(WeaponRotator);
 }
 
 void AFBaseWeapon::Reload(class AFBaseClip* clip)
@@ -66,12 +71,35 @@ void AFBaseWeapon::RequestReload()
 
 void AFBaseWeapon::Fire()
 {
-	
+	UGameplayStatics::SpawnEmitterAttached(MuzzleParticle, FireArrow);
+
+	FVector start = FireArrow->GetComponentLocation();
+	FVector end = start + FireArrow->GetForwardVector() * FireRange;
+	TArray<AActor*> ignoreActor;
+	FHitResult hit;
+	UWorld* world = GetWorld();
+	if (UKismetSystemLibrary::LineTraceSingle(this, start, end, ETraceTypeQuery::TraceTypeQuery1, true, ignoreActor, EDrawDebugTrace::None, hit, true))
+	{
+		end = hit.Location;
+
+		FTransform hitTrans;
+		hitTrans.SetLocation(hit.Location);
+		hitTrans.SetRotation(hit.Normal.ToOrientationQuat());
+		UGameplayStatics::SpawnEmitterAtLocation(world, HitParticle, hitTrans);
+
+		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
+		{
+			unit->ApplyDamage(WeaponOwner, DamageValue);
+		}
+	}
+	auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, TraceParticle, FTransform());
+	trace->SetBeamSourcePoint(0, start, 0);
+	trace->SetBeamTargetPoint(0, end, 0);
 }
 
 bool AFBaseWeapon::CheckFire()
 {
-	if (nullptr == CurrentClip)
+	/*if (nullptr == CurrentClip)
 	{
 		RequestReload();
 		return false;
@@ -81,7 +109,7 @@ bool AFBaseWeapon::CheckFire()
 		RequestReload();
 		return false;
 	}
-	--CurrentClip->CurrentBulletCount;
+	--CurrentClip->CurrentBulletCount;*/
 	CurrentCD = MaxCD;
 	Fire();
 	return true;

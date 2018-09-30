@@ -47,6 +47,11 @@ public:
 private:
 	void MoveForward(float value);
 	void MoveRight(float value);
+
+	void LeftMouseButtonDown();
+	void LeftMouseButtonUp();
+	void RightMouseButtonDown();
+	void RightMouseButtonUp();
 	
 	
 };

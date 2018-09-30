@@ -2,6 +2,7 @@
 
 #include "FPlayer.h"
 #include "FStateMachine.h"
+#include "FBaseWeapon.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -61,6 +62,11 @@ void AFPlayer::SetupPlayerInputComponent(class UInputComponent* inputComponent)
 
 	inputComponent->BindAxis("MoveForward", this, &AFPlayer::MoveForward);
 	inputComponent->BindAxis("MoveRight", this, &AFPlayer::MoveRight);
+
+	inputComponent->BindAction("LeftMouseButton", IE_Pressed, this, &AFPlayer::LeftMouseButtonDown);
+	inputComponent->BindAction("LeftMouseButton", IE_Released, this, &AFPlayer::LeftMouseButtonUp);
+	inputComponent->BindAction("RightMouseButton", IE_Pressed, this, &AFPlayer::RightMouseButtonDown);
+	inputComponent->BindAction("RightMouseButton", IE_Released, this, &AFPlayer::RightMouseButtonUp);
 }
 
 void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
@@ -123,4 +129,28 @@ void AFPlayer::MoveRight(float value)
 	{
 		AddMovementInput(FVector(0.f, 1.f, 0.f), value);
 	}
+}
+
+void AFPlayer::LeftMouseButtonDown()
+{
+	if (nullptr != CurrentWeapon)
+	{
+		CurrentWeapon->StartFire();
+	}
+}
+
+void AFPlayer::LeftMouseButtonUp()
+{
+	if (nullptr != CurrentWeapon)
+	{
+		CurrentWeapon->EndFire();
+	}
+}
+
+void AFPlayer::RightMouseButtonDown()
+{
+}
+
+void AFPlayer::RightMouseButtonUp()
+{
 }

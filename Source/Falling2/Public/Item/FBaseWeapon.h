@@ -43,6 +43,12 @@ public:
 		FName WeaponName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
 		FString Description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
+		UParticleSystem* MuzzleParticle = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
+		UParticleSystem* TraceParticle = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
+		UParticleSystem* HitParticle = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponTransform")
 		FVector WeaponLocation = FVector::ZeroVector;
@@ -58,6 +64,10 @@ public:
 		bool CanEquipSecondaryWeapon = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
 		float MaxCD = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
+		float FireRange = 1000.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
+		int DamageValue = 10;
 
 
 private:
@@ -78,9 +88,9 @@ public:
 
 	void RequestReload();
 	
-	virtual void Fire();
+	
 
 protected:
-	bool CheckFire();
-	
+	virtual bool CheckFire();
+	virtual void Fire();
 };

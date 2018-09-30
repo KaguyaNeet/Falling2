@@ -30,9 +30,16 @@ public:
 
 	void Reload(){ }
 
+	UFUNCTION(BlueprintCallable)
+		void Equip(class AFBaseWeapon* weapon);
+
+	virtual void ApplyDamage(AFBaseUnit* causer, UINT16 value);
+
 public:
 	UPROPERTY()
 		class UFStateMachine* StateMachine = nullptr;
+	
+	class AFBaseWeapon* CurrentWeapon = nullptr;
 
 	
 	

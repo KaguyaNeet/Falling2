@@ -2,6 +2,9 @@
 
 #include "FBaseUnit.h"
 #include "FStateMachine.h"
+#include "FBaseWeapon.h"
+
+#include "Classes/Components/SkeletalMeshComponent.h"
 
 
 // Sets default values
@@ -43,3 +46,18 @@ void AFBaseUnit::ReleaseStateMachine()
 	StateMachine = nullptr;
 }
 
+void AFBaseUnit::ApplyDamage(AFBaseUnit* causer, UINT16 value)
+{
+
+}
+
+void AFBaseUnit::Equip(AFBaseWeapon* weapon)
+{
+	if (nullptr != weapon)
+	{
+		CurrentWeapon = weapon;
+		FAttachmentTransformRules rules(EAttachmentRule::KeepRelative, false);
+		weapon->AttachToComponent(GetMesh(), rules, FName("b_RightHandIndex1"));
+		weapon->EquipWeapon(this);
+	}
+}
