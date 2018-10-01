@@ -25,7 +25,7 @@ void AFCharacter::PlayRollingAnimation(UINT8 num)
 		case 0:montage = RollingFront; break;
 		case 1:montage = RollingLeft; break;
 		case 2:montage = RollingRight; break;
-		case 3:montage = RollingBack; break;
+		case 3:montage = FMath::FRand() > 0.5f ? RollingBack : RollingBack2; break;
 		default:montage = RollingFront; break;
 	}
 	PlayAnimMontage(montage, 1.f, FName("Default"));

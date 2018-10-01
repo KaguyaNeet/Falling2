@@ -91,7 +91,7 @@ void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 		}
 		if (!Turn)
 		{
-			if (FMath::Abs(offset) > 0.48f)
+			if (FMath::Abs(offset) > 0.35f)
 				Turn = true;
 		}
 		else
