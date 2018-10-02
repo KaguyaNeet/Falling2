@@ -35,7 +35,6 @@ public:
 		class UArrowComponent* FireArrow;
 
 public:
-	class AFBaseUnit* WeaponOwner = nullptr;
 	class AFBaseClip* CurrentClip = nullptr;
 	AFBaseWeapon* SecondaryWeapon = nullptr;
 
@@ -79,6 +78,7 @@ public:
 	AFBaseWeapon();
 
 	virtual void Tick(float DeltaTime) override;
+	virtual void Invisible(bool newState) override;
 
 	void EquipWeapon(class AFBaseUnit* owner);
 	void Reload(class AFBaseClip* clip);
@@ -87,8 +87,6 @@ public:
 	void EndFire();
 
 	void RequestReload();
-	
-	
 
 protected:
 	virtual bool CheckFire();

@@ -11,7 +11,7 @@
 #include "Classes/Camera/CameraComponent.h"
 #include "Classes/GameFramework/SpringArmComponent.h"
 #include "Classes/Components/ArrowComponent.h"
-
+#include "Classes/Components/CapsuleComponent.h"
 
 
 AFPlayer::AFPlayer()
@@ -32,12 +32,19 @@ AFPlayer::AFPlayer()
 	CorrectionArrow->AttachTo(RootComponent);
 	CorrectionArrow->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 	GetMesh()->AttachTo(CorrectionArrow);
+
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Overlap);
 }
 
 void AFPlayer::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AFPlayer::OnCapsuleBeginOverlap);
+	GetCapsuleComponent()->OnComponentEndOverlap.AddDynamic(this, &AFPlayer::OnCapsuleEndOverlap);
+	
 	if (nullptr != StateMachine)
 	{
 		StateMachine->ChangeState(UFSPlayerBaseMove::StaticClass());
@@ -63,11 +70,12 @@ void AFPlayer::SetupPlayerInputComponent(class UInputComponent* inputComponent)
 	inputComponent->BindAxis("MoveForward", this, &AFPlayer::MoveForward);
 	inputComponent->BindAxis("MoveRight", this, &AFPlayer::MoveRight);
 
-	inputComponent->BindAction("LeftMouseButton", IE_Pressed, this, &AFPlayer::LeftMouseButtonDown);
-	inputComponent->BindAction("LeftMouseButton", IE_Released, this, &AFPlayer::LeftMouseButtonUp);
-	inputComponent->BindAction("RightMouseButton", IE_Pressed, this, &AFPlayer::RightMouseButtonDown);
-	inputComponent->BindAction("RightMouseButton", IE_Released, this, &AFPlayer::RightMouseButtonUp);
-	inputComponent->BindAction("Space", IE_Pressed, this, &AFPlayer::TriggerRolling);
+	inputComponent->BindAction("MainFire", IE_Pressed, this, &AFPlayer::LeftMouseButtonDown);
+	inputComponent->BindAction("MainFire", IE_Released, this, &AFPlayer::LeftMouseButtonUp);
+	inputComponent->BindAction("SecondaryFire", IE_Pressed, this, &AFPlayer::RightMouseButtonDown);
+	inputComponent->BindAction("SecondaryFire", IE_Released, this, &AFPlayer::RightMouseButtonUp);
+	inputComponent->BindAction("Rolling", IE_Pressed, this, &AFPlayer::TriggerRolling);
+	inputComponent->BindAction("Pick", IE_Pressed, this, &AFPlayer::PickUp);
 }
 
 void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
@@ -135,7 +143,7 @@ void AFPlayer::MoveRight(float value)
 
 void AFPlayer::LeftMouseButtonDown()
 {
-	if (nullptr != CurrentWeapon)
+	if (nullptr != CurrentWeapon && StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
 	{
 		CurrentWeapon->StartFire();
 	}
@@ -161,7 +169,62 @@ void AFPlayer::TriggerRolling()
 {
 	if (nullptr != StateMachine && StateMachine->CheckState(UFSPlayerBaseMove::StaticClass()))
 	{
+		if (nullptr != CurrentWeapon)
+		{
+			CurrentWeapon->EndFire();
+		}
 		FVector direction = GetVelocity().Size() <= 0.f ? Direction : GetVelocity();
 		Rolling(LifeTime, RollingDistance, direction);
+	}
+}
+
+void AFPlayer::AddTriggerItem(AFBaseItem * item)
+{
+	TriggerItems.AddUnique(item);
+	UpdateTriggerItemInfo();
+}
+
+void AFPlayer::RemoveTriggerItem(AFBaseItem * item)
+{
+	TriggerItems.Remove(item);
+	UpdateTriggerItemInfo();
+}
+
+void AFPlayer::UpdateTriggerItemInfo()
+{
+	CurrentChooseItem = nullptr;
+	for (int i = 0; i < TriggerItems.Num(); ++i)
+	{
+		if (nullptr != TriggerItems[i])
+		{
+			CurrentChooseItem = TriggerItems[i];
+			break;
+		}
+	}
+	//Display the Item info.
+}
+
+void AFPlayer::PickUp()
+{
+	if (nullptr != CurrentChooseItem)
+	{
+		CurrentChooseItem->PickedUp(this);
+	}
+}
+
+void AFPlayer::OnCapsuleBeginOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
+{
+	
+	if (AFBaseItem* item = Cast<AFBaseItem>(OtherActor))
+	{
+		AddTriggerItem(item);
+	}
+}
+
+void AFPlayer::OnCapsuleEndOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
+{
+	if (AFBaseItem* item = Cast<AFBaseItem>(OtherActor))
+	{
+		RemoveTriggerItem(item);
 	}
 }

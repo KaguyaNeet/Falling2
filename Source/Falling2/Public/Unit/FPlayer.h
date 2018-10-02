@@ -37,9 +37,10 @@ public:
 
 	FVector Direction = FVector::ZeroVector;
 private:
-	
 	FHitResult lastHit;
 	
+	TArray<class AFBaseItem*> TriggerItems;
+	class AFBaseItem* CurrentChooseItem = nullptr;
 
 public:
 	AFPlayer();
@@ -51,6 +52,11 @@ public:
 
 	void PlayerBaseAnimUpdate(float DeltaTime);
 
+	UFUNCTION(BlueprintCallable)
+		void OnCapsuleBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+		void OnCapsuleEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 private:
 	void MoveForward(float value);
 	void MoveRight(float value);
@@ -61,6 +67,11 @@ private:
 	void RightMouseButtonUp();
 
 	void TriggerRolling();
-	
-	
+
+	void AddTriggerItem(class AFBaseItem* item);
+	void RemoveTriggerItem(class AFBaseItem* item);
+
+	void UpdateTriggerItemInfo();
+	void PickUp();
+
 };

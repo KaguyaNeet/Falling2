@@ -6,6 +6,7 @@
 
 #include "Classes/Components/SkeletalMeshComponent.h"
 #include "Classes/Components/ArrowComponent.h"
+#include "Classes/Components/SphereComponent.h"
 #include "Classes/Particles/ParticleSystemComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -13,10 +14,10 @@
 AFBaseWeapon::AFBaseWeapon()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Mesh"));
-	RootComponent = Mesh;
+	Mesh->AttachTo(Trigger);
 
 	FireArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("FireArrow"));
-	FireArrow->AttachTo(RootComponent);
+	FireArrow->AttachTo(Mesh);
 }
 
 void AFBaseWeapon::Tick(float DeltaTime)
@@ -31,9 +32,14 @@ void AFBaseWeapon::Tick(float DeltaTime)
 	}
 }
 
+void AFBaseWeapon::Invisible(bool newState)
+{
+	Mesh->SetVisibility(!newState);
+}
+
 void AFBaseWeapon::EquipWeapon(class AFBaseUnit* owner)
 {
-	WeaponOwner = owner;
+	ItemOwner = owner;
 	SetActorRelativeLocation(WeaponLocation);
 	SetActorRelativeRotation(WeaponRotator);
 }
@@ -63,9 +69,9 @@ void AFBaseWeapon::EndFire()
 
 void AFBaseWeapon::RequestReload()
 {
-	if (nullptr != WeaponOwner)
+	if (nullptr != ItemOwner)
 	{
-		WeaponOwner->Reload();
+		ItemOwner->Reload();
 	}
 }
 
@@ -89,7 +95,7 @@ void AFBaseWeapon::Fire()
 
 		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
 		{
-			unit->ApplyDamage(WeaponOwner, DamageValue);
+			unit->ApplyDamage(ItemOwner, DamageValue);
 		}
 	}
 	auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, TraceParticle, FTransform());
