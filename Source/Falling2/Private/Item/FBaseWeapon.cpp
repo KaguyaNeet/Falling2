@@ -40,6 +40,7 @@ void AFBaseWeapon::Invisible(bool newState)
 void AFBaseWeapon::EquipWeapon(class AFBaseUnit* owner)
 {
 	ItemOwner = owner;
+	Invisible(false);
 	SetActorRelativeLocation(WeaponLocation);
 	SetActorRelativeRotation(WeaponRotator);
 }
@@ -117,6 +118,20 @@ bool AFBaseWeapon::CheckFire()
 	}
 	--CurrentClip->CurrentBulletCount;*/
 	CurrentCD = MaxCD;
+	//Test use.
 	Fire();
+
+	TArray<FRotator> directions = CalculationDirection();
+	SpawnFire(directions);
 	return true;
+}
+
+TArray<FRotator> AFBaseWeapon::CalculationDirection()
+{
+	return TArray<FRotator>();
+}
+
+void AFBaseWeapon::SpawnFire(const TArray<FRotator>& directions)
+{
+
 }

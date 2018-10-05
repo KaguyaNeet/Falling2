@@ -35,6 +35,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "PlayerProperty")
 		float LifeTime = 1.f;
 
+	UPROPERTY(BlueprintReadOnly)
+		AFBaseWeapon* CurrentMainWeapon = nullptr;
+	UPROPERTY(BlueprintReadOnly)
+		AFBaseWeapon* CurrentSecondaryWeapon = nullptr;
+
 	FVector Direction = FVector::ZeroVector;
 private:
 	FHitResult lastHit;

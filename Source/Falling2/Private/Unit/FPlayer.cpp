@@ -209,6 +209,19 @@ void AFPlayer::PickUp()
 	if (nullptr != CurrentChooseItem)
 	{
 		CurrentChooseItem->PickedUp(this);
+		if (AFBaseWeapon* weapon = Cast<AFBaseWeapon>(CurrentChooseItem))
+		{
+			if (nullptr == CurrentMainWeapon && weapon->IsMainWeapon)
+			{
+				CurrentMainWeapon = weapon;
+				Equip(weapon);
+				CurrentMainWeapon->EquipWeapon(this);
+			}
+			if (nullptr == CurrentSecondaryWeapon && !weapon->IsMainWeapon)
+			{
+				CurrentSecondaryWeapon = weapon;
+			}
+		}
 	}
 }
 
