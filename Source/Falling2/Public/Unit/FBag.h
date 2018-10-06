@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "FBaseItem.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -17,11 +18,11 @@ class FALLING2_API UFBag : public UObject
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BagProperty")
 		int MaxItemNum = 20;
-//	UPROPERTY(BlueprintReadOnly)
-//		TMultiMap<class AFBaseItem*, int> Items;
-//
-//public:
-//	bool AddItem(class AFBaseItem* item, UINT8 num);
+	UPROPERTY(BlueprintReadOnly)
+		TMap<FName, int> Items;
+
+public:
+	bool AddItem(const FName& item, UINT8 num);
 	
 	
 };

@@ -50,3 +50,8 @@ void AFBaseItem::PickedUp(AFBaseUnit * owner)
 	}
 }
 
+void AFBaseItem::InitializeItem(const FItemProperty & itemProperty)
+{
+	ItemProperty = itemProperty;
+}
+

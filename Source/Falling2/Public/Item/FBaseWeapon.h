@@ -17,25 +17,20 @@ enum class EFireMode : uint8
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	ERifle UMETA(DisplayName = "Rifle"),
-	EShotgun UMETA(DisplayName = "Shotgun"),
-	ESniper UMETA(DisplayName = "Sniper"),
-	EGrenade UMETA(DisplayName = "Grenade"),
-	ERocket UMETA(DisplayName = "Rocket"),
-	ELaser UMETA(DisplayName = "Laser")
+	ERifle	 = 1      UMETA(DisplayName = "Rifle"),
+	EShotgun = 1 << 1 UMETA(DisplayName = "Shotgun"),
+	ESniper  = 1 << 2 UMETA(DisplayName = "Sniper"),
+	EGrenade = 1 << 3 UMETA(DisplayName = "Grenade"),
+	ERocket  = 1 << 4 UMETA(DisplayName = "Rocket"),
+	ELaser   = 1 << 5 UMETA(DisplayName = "Laser")
 };
 
-
 USTRUCT()
-struct FWeaponList : public FTableRowBase
+struct FWeaponProperty : public FTableRowBase
 {
 	GENERATED_USTRUCT_BODY()
 
 public:
-	//Base property of this weapon.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		FItemProperty ItemProperty;
-
 	//Type of this weapon.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		EWeaponType WeaponType = EWeaponType::ERifle;
@@ -94,8 +89,11 @@ public:
 	//Scattering angle's increment of this weapon.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		float ScatteringAngleIncrement = 0.1f;
+	//Scattering angle's reduction of this weapon.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		float ScatteringAngleReduction = 0.1f;
 
-	//ScatteringAngle of the shotgun, Shotgun attribute.
+	//ScatteringAngle of the multi bullet.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		float ScatteringAngle = 15.f;
 
@@ -110,6 +108,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		float BulletSpeed = 2000.f;
 
+};
+
+USTRUCT()
+struct FWeaponListBP : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	//Base property of this weapon.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FItemProperty ItemProperty;
+	//Property of this weapon.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FWeaponProperty WeaponProperty;
 };
 /**
  * 
@@ -128,6 +140,9 @@ public:
 public:
 	class AFBaseClip* CurrentClip = nullptr;
 	AFBaseWeapon* SecondaryWeapon = nullptr;
+
+	UPROPERTY(BlueprintReadOnly)
+		FWeaponProperty WeaponProperty;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
 		FName WeaponName;
@@ -165,10 +180,12 @@ public:
 private:
 	float CurrentCD = 0.f;
 	bool isFire = false;
-
+	float CurrentScatteringAngle = 0.f;
 
 public:
 	AFBaseWeapon();
+
+	void InitializeWeapon(const FWeaponProperty& weaponProperty);
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void Invisible(bool newState) override;
@@ -185,7 +202,11 @@ protected:
 	bool CheckFire();
 	//Test use.
 	void Fire();
-	TArray<FRotator> CalculationDirection();
-	void SpawnFire(const TArray<FRotator>& directions);
+	TArray<FVector> CalculationDirection();
+	void SpawnFire(const TArray<FVector>& directions);
+
+private:
+	void SpawnActorBullet(FVector direction);
+	void SpawnTraceBullet(FVector direction);
 	
 };

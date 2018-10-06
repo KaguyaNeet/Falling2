@@ -70,6 +70,8 @@ public:
 	void OnGround();
 	void PickedUp(class AFBaseUnit* owner);
 
+	void InitializeItem(const FItemProperty& itemProperty);
+
 public:
 	class AFBaseUnit* ItemOwner = nullptr;
 	
@@ -78,4 +80,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "ItemProperty")
 		int MaxStackingNum = 10;
+
+	UPROPERTY(BlueprintReadOnly)
+		FItemProperty ItemProperty;
 };

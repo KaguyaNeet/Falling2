@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "FBaseItem.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -16,17 +17,21 @@ public:
 	AFItemManager();
 
 	static class AFBaseItem* CreateItem(AActor* caller, FName itemName);
+	static FItemProperty* GetItemProperty(AActor* caller, const FName& name);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+private:
+	static AFItemManager* GetItemManager(AActor* caller);
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	TArray<FName> ItemNames;
+	TMap<FName, FItemProperty> ItemProps;
 	class UDataTable* WeaponTable = nullptr;
 	class UDataTable* ClipTable = nullptr;
 	

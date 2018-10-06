@@ -2,14 +2,22 @@
 
 #include "FBag.h"
 
-//bool UFBag::AddItem(AFBaseItem * item, UINT8 num)
-//{
-//	if (Items.Num() < MaxItemNum)
-//	{
-//		return true;
-//	}
-//	else
-//	{
-//		return false;
-//	}
-//}
+bool UFBag::AddItem(const FName& item, UINT8 num)
+{
+	if (Items.Num() < MaxItemNum)
+	{
+		if (int* it = Items.Find(item))
+		{
+			*it += num;
+		}
+		else
+		{
+			Items.Add(item, num);
+		}
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
