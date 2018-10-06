@@ -82,6 +82,11 @@ public:
 	//Projectile number of this weapon.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		int ProjectileNum = 1;
+	//Recoil of this weapon, beteween 0 ~ 100.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		float Recoil = 0.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int Piercing = 0;
 
 	//Maximum scattering angle of thie weapon.
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

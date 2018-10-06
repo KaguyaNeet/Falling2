@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "FBaseClip.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -33,13 +34,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Equip(class AFBaseWeapon* weapon);
 
-	virtual void ApplyDamage(AFBaseUnit* causer, UINT16 value);
+	virtual void ApplyDamage(AFBaseUnit* causer, EBulletElement element, UINT baseValue, UINT piercing);
 
 public:
 	UPROPERTY()
 		class UFStateMachine* StateMachine = nullptr;
 	
 	class AFBaseWeapon* CurrentWeapon = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Property")
+		int Armor = 0;
 
 	
 	

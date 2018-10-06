@@ -72,6 +72,9 @@ public:
 
 	void InitializeItem(const FItemProperty& itemProperty);
 
+	UFUNCTION(BlueprintCallable)
+		virtual void OnUse(){ }
+
 public:
 	class AFBaseUnit* ItemOwner = nullptr;
 	

@@ -46,7 +46,7 @@ void AFBaseUnit::ReleaseStateMachine()
 	StateMachine = nullptr;
 }
 
-void AFBaseUnit::ApplyDamage(AFBaseUnit* causer, UINT16 value)
+void AFBaseUnit::ApplyDamage(AFBaseUnit* causer, EBulletElement element, UINT baseValue, UINT piercing)
 {
 
 }

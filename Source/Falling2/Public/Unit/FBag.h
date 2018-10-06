@@ -20,9 +20,16 @@ public:
 		int MaxItemNum = 20;
 	UPROPERTY(BlueprintReadOnly)
 		TMap<FName, int> Items;
+	
+	class AFBaseUnit* Owner = nullptr;
 
 public:
-	bool AddItem(const FName& item, UINT8 num);
+	void Initialize(class AFBaseUnit* owner);
+
+	bool AddItem(const FName& name, UINT8 num);
+	UFUNCTION(BlueprintCallable)
+		void UseItem(const FName& name);
+	void RemoveItem(const FName& name);
 	
 	
 };

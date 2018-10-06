@@ -6,6 +6,17 @@
 #include "Item/FBaseItem.h"
 #include "FBaseClip.generated.h"
 
+UENUM(BlueprintType)
+enum class EBulletElement : uint8
+{
+	ENormal UMETA(DisplayName = "Normal"),
+	EIncendiary UMETA(DisplayName = "Incendiary"),
+	EFrozen UMETA(DisplayName = "Frozen"),
+	ECorrosive UMETA(DisplayName = "Corrosive"),
+	EExplosive UMETA(DisplayName = "Explosive"),
+	EBlackhole UMETA(DisplayName = "Blackhole"),
+};
+
 /**
  * 
  */
@@ -19,5 +30,6 @@ public:
 		int MaxBulletCount = 5;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Property")
 		int CurrentBulletCount = 0;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Property")
+		EBulletElement BulletElement = EBulletElement::ENormal;
 };

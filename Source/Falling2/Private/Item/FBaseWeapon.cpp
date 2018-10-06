@@ -3,6 +3,7 @@
 #include "FBaseWeapon.h"
 #include "FBaseClip.h"
 #include "FBaseUnit.h"
+#include "FBullet.h"
 
 #include "Classes/Components/SkeletalMeshComponent.h"
 #include "Classes/Components/ArrowComponent.h"
@@ -106,7 +107,7 @@ void AFBaseWeapon::Fire()
 
 		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
 		{
-			unit->ApplyDamage(ItemOwner, DamageValue);
+			//unit->ApplyDamage(ItemOwner, DamageValue);
 		}
 	}
 	auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, TraceParticle, FTransform());
@@ -179,7 +180,15 @@ void AFBaseWeapon::SpawnFire(const TArray<FVector>& directions)
 
 void AFBaseWeapon::SpawnActorBullet(FVector direction)
 {
-	
+	if (nullptr != WeaponProperty.Bullet)
+	{
+		UWorld* world = GetWorld();
+		AFBullet* bullet = world->SpawnActor<AFBullet>(WeaponProperty.Bullet, FireArrow->GetComponentLocation(), direction.Rotation());
+		if (nullptr != bullet)
+		{
+			bullet->Initialize(ItemOwner, CurrentClip->BulletElement, WeaponProperty.BaseDamageValue, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
+		}
+	}
 }
 
 void AFBaseWeapon::SpawnTraceBullet(FVector direction)
@@ -200,7 +209,7 @@ void AFBaseWeapon::SpawnTraceBullet(FVector direction)
 
 		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
 		{
-			unit->ApplyDamage(ItemOwner, DamageValue);
+			unit->ApplyDamage(ItemOwner, CurrentClip->BulletElement, WeaponProperty.BaseDamageValue, WeaponProperty.Piercing);
 		}
 	}
 	auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, TraceParticle, FTransform());

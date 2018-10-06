@@ -32,6 +32,10 @@ AFPlayer::AFPlayer()
 	CorrectionArrow->AttachTo(RootComponent);
 	CorrectionArrow->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
 	GetMesh()->AttachTo(CorrectionArrow);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
@@ -89,26 +93,7 @@ void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 		Direction = direction;
 		FVector directionXY = FVector(direction.X, direction.Y, 0.f);
 
-		float offset = (directionXY.Rotation().Yaw - rotation.Yaw) / 180.f;
-		if (FMath::Abs(offset) > 1.f)
-		{
-			float sign;
-			sign = rotation.Yaw >= 0.f ? 1.f : -1.f;
-			offset = sign * (360.f - (FMath::Abs(directionXY.Rotation().Yaw) + FMath::Abs(rotation.Yaw))) / 180.f;
-			RightTurn = sign > 0.f ? true : false;
-		}
-		if (!Turn)
-		{
-			if (FMath::Abs(offset) > 0.35f)
-				Turn = true;
-		}
-		else
-		{
-			GetMesh()->SetRelativeRotation(UKismetMathLibrary::RLerp(rotation, directionXY.Rotation(), DeltaTime * 5.f, true));
-			if (FMath::Abs(offset) <= 0.05f)
-				Turn = false;
-		}
-		CurrentOffset = UKismetMathLibrary::Lerp(CurrentOffset, offset, DeltaTime * 5.f);
+		
 
 		FVector velocity = GetVelocity();
 		if (velocity.Size2D() > 0.f)
@@ -117,10 +102,31 @@ void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 			velocity.Rotation().Yaw >= 0.f ? sign = 1.f : sign = -1.f;
 			float velocityOffset = directionXY.Rotation().Yaw - velocity.Rotation().Yaw;
 			VelocityOffset = FMath::Abs(velocityOffset) > 180.f ? (360.f - FMath::Abs(velocityOffset)) * sign : velocityOffset;
+			GetMesh()->SetRelativeRotation(UKismetMathLibrary::RLerp(rotation, directionXY.Rotation(), DeltaTime * 5.f, true));
 		}
 		else
 		{
 			VelocityOffset = 0.f;
+			float offset = (directionXY.Rotation().Yaw - rotation.Yaw) / 180.f;
+			if (FMath::Abs(offset) > 1.f)
+			{
+				float sign;
+				sign = rotation.Yaw >= 0.f ? 1.f : -1.f;
+				offset = sign * (360.f - (FMath::Abs(directionXY.Rotation().Yaw) + FMath::Abs(rotation.Yaw))) / 180.f;
+				RightTurn = sign > 0.f ? true : false;
+			}
+			if (!Turn)
+			{
+				if (FMath::Abs(offset) > 0.35f)
+					Turn = true;
+			}
+			else
+			{
+				GetMesh()->SetRelativeRotation(UKismetMathLibrary::RLerp(rotation, directionXY.Rotation(), DeltaTime * 5.f, true));
+				if (FMath::Abs(offset) <= 0.05f)
+					Turn = false;
+			}
+			CurrentOffset = UKismetMathLibrary::Lerp(CurrentOffset, offset, DeltaTime * 5.f);
 		}
 	}
 }
