@@ -75,6 +75,35 @@ FItemProperty * AFItemManager::GetItemProperty(AActor* caller, const FName & nam
 	return nullptr;
 }
 
+TArray<const FItemProperty*> AFItemManager::GetItemsProperty(AActor * caller, TArray<FName*> names)
+{
+	TArray<const FItemProperty*> result;
+	if (AFItemManager* manager = GetItemManager(caller))
+	{
+		for (int i = 0; i < names.Num(); ++i)
+		{
+			if (FItemProperty* prop = manager->ItemProps.Find(*names[i]))
+			{
+				result.Add(prop);
+			}
+		}
+	}
+	return result;
+}
+
+UINT8 AFItemManager::GetMaxStackingNum(AActor * caller, const FName & name)
+{
+	UINT8 result = 1;
+	if (AFItemManager* manager = GetItemManager(caller))
+	{
+		if (FItemProperty* prop = manager->ItemProps.Find(name))
+		{
+			result = prop->MaxStackingNum;
+		}
+	}
+	return result;
+}
+
 // Called when the game starts or when spawned
 void AFItemManager::BeginPlay()
 {

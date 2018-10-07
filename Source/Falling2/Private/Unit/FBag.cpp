@@ -4,32 +4,46 @@
 #include "FItemManager.h"
 #include "FBaseUnit.h"
 
-void UFBag::Initialize(AFBaseUnit * owner)
+void AFBag::Initialize(AFBaseUnit * owner)
 {
 	Owner = owner;
 }
 
-bool UFBag::AddItem(const FName& name, UINT8 num)
+bool AFBag::AddItem(const FName& name)
 {
-	if (Items.Num() < MaxItemNum)
+	if (nullptr != Owner)
 	{
-		if (int* it = Items.Find(name))
+		TArray<int*> result;
+		Items.MultiFindPointer(name, result);
+		UINT8 maxNum = AFItemManager::GetMaxStackingNum(Owner, name);
+		bool needAdd = true;
+		for (int i = 0; i < result.Num(); ++i)
 		{
-			*it += num;
+			if (nullptr != result[i] && *result[i] < maxNum)
+			{
+				++(result[i]);
+				needAdd = false;
+				break;
+			}
 		}
-		else
+		if (needAdd)
 		{
-			Items.Add(name, num);
+			if (Items.Num() < MaxItemNum)
+			{
+				Items.Add(name, 1);
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		}
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+	return false;
 }
 
-void UFBag::UseItem(const FName & name)
+void AFBag::UseItem(const FName & name)
 {
 	if (nullptr != Owner)
 	{
@@ -47,7 +61,23 @@ void UFBag::UseItem(const FName & name)
 	}
 }
 
-void UFBag::RemoveItem(const FName & name)
+void AFBag::RemoveItem(const FName & name)
 {
 	Items.Remove(name);
 }
+
+void AFBag::UpdateUMGItem()
+{
+	if (nullptr != Owner)
+	{
+		for (auto it : Items)
+		{
+			UMGItems.Empty();
+			FUMGItemProperty umgItem;
+			umgItem.ItemProperty = *AFItemManager::GetItemProperty(Owner, it.Key);
+			umgItem.Count = it.Value;
+			UMGItems.Add(umgItem);
+		}
+	}
+}
+

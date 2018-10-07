@@ -15,11 +15,11 @@ AFBullet::AFBullet()
 	BulletMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("BulletMovement"));
 
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
-	BulletMesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+	BulletMesh->SetupAttachment(RootComponent);
 	BulletMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
 	BulletTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("BulletTrigger"));
-	BulletTrigger->AttachToComponent(BulletMesh, FAttachmentTransformRules::KeepRelativeTransform);
+	BulletTrigger->SetupAttachment(BulletMesh);
 	BulletTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	BulletTrigger->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
 	BulletTrigger->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);

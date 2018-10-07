@@ -43,6 +43,7 @@ void AFBaseItem::PickedUp(AFBaseUnit * owner)
 {
 	if (nullptr != owner)
 	{
+		isPicked = true;
 		Trigger->SetActive(false);
 		ItemOwner = owner;
 		Invisible(true);

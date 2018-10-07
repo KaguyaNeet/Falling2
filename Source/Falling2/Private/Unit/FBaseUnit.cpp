@@ -3,6 +3,7 @@
 #include "FBaseUnit.h"
 #include "FStateMachine.h"
 #include "FBaseWeapon.h"
+#include "FBuff.h"
 
 #include "Classes/Components/SkeletalMeshComponent.h"
 
@@ -31,6 +32,12 @@ void AFBaseUnit::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	StateMachine->UpdateStateMachine(DeltaTime);
+
+	BuffTickCounter += DeltaTime;
+	if (BuffTickCounter >= 1.f)
+	{
+		BuffTickCounter = 0.f;
+	}
 }
 
 // Called to bind functionality to input
@@ -49,6 +56,17 @@ void AFBaseUnit::ReleaseStateMachine()
 void AFBaseUnit::ApplyDamage(AFBaseUnit* causer, EBulletElement element, UINT baseValue, UINT piercing)
 {
 
+}
+
+void AFBaseUnit::TickBuff()
+{
+	for (int i = 0; i < Buffs.Num(); ++i)
+	{
+		if (nullptr != Buffs[i])
+		{
+			Buffs[i]->BuffTick();
+		}
+	}
 }
 
 void AFBaseUnit::Equip(AFBaseWeapon* weapon)

@@ -18,6 +18,8 @@ public:
 
 	static class AFBaseItem* CreateItem(AActor* caller, FName itemName);
 	static FItemProperty* GetItemProperty(AActor* caller, const FName& name);
+	static TArray<const FItemProperty*> GetItemsProperty(AActor* caller, TArray<FName*> names);
+	static UINT8 GetMaxStackingNum(AActor* caller, const FName& name);
 
 protected:
 	// Called when the game starts or when spawned

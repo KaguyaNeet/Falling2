@@ -36,6 +36,9 @@ public:
 		float LifeTime = 1.f;
 
 	UPROPERTY(BlueprintReadOnly)
+		class AFBag* Bag;
+
+	UPROPERTY(BlueprintReadOnly)
 		AFBaseWeapon* CurrentMainWeapon = nullptr;
 	UPROPERTY(BlueprintReadOnly)
 		AFBaseWeapon* CurrentSecondaryWeapon = nullptr;

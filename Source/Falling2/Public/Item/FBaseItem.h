@@ -50,6 +50,18 @@ public:
 
 };
 
+USTRUCT()
+struct FUMGItemProperty : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	UPROPERTY(BlueprintReadOnly)
+		FItemProperty ItemProperty;
+	UPROPERTY(BlueprintReadOnly)
+		int Count = 1;
+};
+
 UCLASS()
 class FALLING2_API AFBaseItem : public AActor
 {
@@ -77,6 +89,7 @@ public:
 
 public:
 	class AFBaseUnit* ItemOwner = nullptr;
+	bool isPicked = false;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		class USphereComponent* Trigger;

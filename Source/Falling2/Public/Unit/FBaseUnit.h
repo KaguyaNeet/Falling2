@@ -46,5 +46,12 @@ public:
 		int Armor = 0;
 
 	
-	
+private:
+	UPROPERTY()
+		TArray<class UFBuff*> Buffs;
+
+	float BuffTickCounter = 0.f;
+
+private:
+	void TickBuff();
 };

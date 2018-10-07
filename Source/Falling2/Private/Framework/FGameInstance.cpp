@@ -2,6 +2,7 @@
 
 #include "FGameInstance.h"
 #include "FItemManager.h"
+#include "FBuffManager.h"
 
 AFItemManager * UFGameInstance::GetItemManager()
 {
@@ -13,4 +14,13 @@ AFItemManager * UFGameInstance::GetItemManager()
 		}
 	}
 	return ItemManager;
+}
+
+UFBuffManager * UFGameInstance::GetBuffManager()
+{
+	if (nullptr == BuffManager)
+	{
+		BuffManager = NewObject<UFBuffManager>(this, UFBuffManager::StaticClass()->GetFName());
+	}
+	return BuffManager;
 }

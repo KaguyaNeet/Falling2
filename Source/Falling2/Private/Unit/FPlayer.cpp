@@ -3,6 +3,7 @@
 #include "FPlayer.h"
 #include "FStateMachine.h"
 #include "FBaseWeapon.h"
+#include "FBag.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -57,6 +58,12 @@ void AFPlayer::BeginPlay()
 	if (APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0))
 	{
 		controller->bShowMouseCursor = true;
+	}
+
+	if (UWorld* world = GetWorld())
+	{
+		Bag = world->SpawnActor<AFBag>(FVector::ZeroVector, FRotator::ZeroRotator);
+		Bag->Initialize(this);
 	}
 }
 
@@ -214,18 +221,29 @@ void AFPlayer::PickUp()
 {
 	if (nullptr != CurrentChooseItem)
 	{
-		CurrentChooseItem->PickedUp(this);
 		if (AFBaseWeapon* weapon = Cast<AFBaseWeapon>(CurrentChooseItem))
 		{
 			if (nullptr == CurrentMainWeapon && weapon->IsMainWeapon)
 			{
+				CurrentChooseItem->PickedUp(this);
 				CurrentMainWeapon = weapon;
 				Equip(weapon);
 				CurrentMainWeapon->EquipWeapon(this);
+				return;
 			}
 			if (nullptr == CurrentSecondaryWeapon && !weapon->IsMainWeapon)
 			{
+				CurrentChooseItem->PickedUp(this);
 				CurrentSecondaryWeapon = weapon;
+				return;
+			}
+		}
+		if (nullptr != Bag)
+		{
+			if (Bag->AddItem(CurrentChooseItem->ItemProperty.ItemInternalName))
+			{
+				CurrentChooseItem->PickedUp(this);
+				CurrentChooseItem->Destroy();
 			}
 		}
 	}
@@ -236,7 +254,8 @@ void AFPlayer::OnCapsuleBeginOverlap(UPrimitiveComponent * OverlappedComponent, 
 	
 	if (AFBaseItem* item = Cast<AFBaseItem>(OtherActor))
 	{
-		AddTriggerItem(item);
+		if (!item->isPicked)
+			AddTriggerItem(item);
 	}
 }
 
