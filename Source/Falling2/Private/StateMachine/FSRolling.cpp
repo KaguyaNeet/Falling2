@@ -44,7 +44,7 @@ void UFSRolling::SetRolling(float lifetime, float distance, FVector direction)
 		FVector faceDirection = FVector::ZeroVector;
 		if (AFPlayer* player = Cast<AFPlayer>(character))
 		{
-			faceDirection = player->Direction;
+			faceDirection = player->CursorDirection;
 		}
 		else
 		{

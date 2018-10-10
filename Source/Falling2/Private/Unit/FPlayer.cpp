@@ -97,7 +97,7 @@ void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 		controller->GetHitResultUnderCursorByChannel(ETraceTypeQuery::TraceTypeQuery1, true, hit) ? lastHit = hit : hit = lastHit;
 		FRotator rotation = GetMesh()->GetRelativeTransform().Rotator();
 		FVector direction = hit.Location - GetActorLocation();
-		Direction = direction;
+		CursorDirection = direction;
 		FVector directionXY = FVector(direction.X, direction.Y, 0.f);
 
 		
@@ -186,7 +186,7 @@ void AFPlayer::TriggerRolling()
 		{
 			CurrentWeapon->EndFire();
 		}
-		FVector direction = GetVelocity().Size() <= 0.f ? Direction : GetVelocity();
+		FVector direction = GetVelocity().Size() <= 0.f ? CursorDirection : GetVelocity();
 		Rolling(LifeTime, RollingDistance, direction);
 	}
 }
