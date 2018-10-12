@@ -37,10 +37,13 @@ AFPlayer::AFPlayer()
 	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel2, ECollisionResponse::ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Block);
+
 
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetCapsuleComponent()->SetCollisionObjectType(ECollisionChannel::ECC_Pawn);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Overlap);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel4, ECollisionResponse::ECR_Ignore);
 }
 
 void AFPlayer::BeginPlay()
@@ -223,18 +226,12 @@ void AFPlayer::PickUp()
 	{
 		if (AFBaseWeapon* weapon = Cast<AFBaseWeapon>(CurrentChooseItem))
 		{
-			if (nullptr == CurrentMainWeapon && weapon->IsMainWeapon)
+			if (nullptr == CurrentMainWeapon)
 			{
 				CurrentChooseItem->PickedUp(this);
 				CurrentMainWeapon = weapon;
 				Equip(weapon);
 				CurrentMainWeapon->EquipWeapon(this);
-				return;
-			}
-			if (nullptr == CurrentSecondaryWeapon && !weapon->IsMainWeapon)
-			{
-				CurrentChooseItem->PickedUp(this);
-				CurrentSecondaryWeapon = weapon;
 				return;
 			}
 		}

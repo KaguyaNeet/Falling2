@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FBaseWeapon.h"
-#include "FBaseClip.h"
 #include "FBaseUnit.h"
 #include "FBullet.h"
 
@@ -90,37 +89,6 @@ void AFBaseWeapon::RequestReload()
 	}
 }
 
-void AFBaseWeapon::Fire()
-{
-	UGameplayStatics::SpawnEmitterAttached(MuzzleParticle, FireArrow);
-
-	FVector start = FireArrow->GetComponentLocation();
-	FVector direction = FireArrow->GetForwardVector();
-	FVector end = start + FRotator(0.f, direction.Rotation().Yaw + FMath::FRandRange(-3.f, 3.f), 0.f).Vector() * FireRange;
-	TArray<AActor*> ignoreActor;
-	FHitResult hit;
-	UWorld* world = GetWorld();
-	if (UKismetSystemLibrary::LineTraceSingle(this, start, end, ETraceTypeQuery::TraceTypeQuery1, true, ignoreActor, EDrawDebugTrace::None, hit, true))
-	{
-		end = hit.Location;
-
-		FTransform hitTrans;
-		hitTrans.SetLocation(hit.Location);
-		hitTrans.SetRotation(hit.Normal.ToOrientationQuat());
-		UGameplayStatics::SpawnEmitterAtLocation(world, HitParticle, hitTrans);
-
-		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
-		{
-			//unit->ApplyDamage(ItemOwner, DamageValue);
-		}
-	}
-	if (auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, TraceParticle, FTransform()))
-	{
-		trace->SetBeamSourcePoint(0, start, 0);
-		trace->SetBeamTargetPoint(0, end, 0);
-	}
-}
-
 bool AFBaseWeapon::CheckFire()
 {
 	/*if (nullptr == CurrentClip)
@@ -135,8 +103,9 @@ bool AFBaseWeapon::CheckFire()
 	}
 	--CurrentClip->CurrentBulletCount;*/
 	CurrentCD = WeaponProperty.MaxCD;
-	//Test use.
-	//Fire();
+	//CurrentBulletElement = CurrentClip->BulletElement;
+	//CurrentBulletDamage = CurrentClip->BulletDamage;
+
 
 	TArray<FVector> directions = CalculationDirection();
 	SpawnFire(directions);
@@ -193,7 +162,7 @@ void AFBaseWeapon::SpawnActorBullet(FVector direction)
 		AFBullet* bullet = world->SpawnActor<AFBullet>(WeaponProperty.Bullet, FireArrow->GetComponentLocation(), direction.Rotation());
 		if (nullptr != bullet)
 		{
-			bullet->Initialize(ItemOwner, CurrentClip->BulletElement, WeaponProperty.BaseDamageValue, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
+			bullet->Initialize(ItemOwner, CurrentBulletElement, WeaponProperty.BaseDamageValue + CurrentBulletDamage, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
 		}
 	}
 }
@@ -201,11 +170,11 @@ void AFBaseWeapon::SpawnActorBullet(FVector direction)
 void AFBaseWeapon::SpawnTraceBullet(FVector direction)
 {
 	FVector start = FireArrow->GetComponentLocation();
-	FVector end = start + direction * FireRange;
+	FVector end = start + direction * WeaponProperty.FireRange;
 	TArray<AActor*> ignoreActor;
 	FHitResult hit;
 	UWorld* world = GetWorld();
-	if (UKismetSystemLibrary::LineTraceSingle(this, start, end, ETraceTypeQuery::TraceTypeQuery1, true, ignoreActor, EDrawDebugTrace::None, hit, true))
+	if (UKismetSystemLibrary::LineTraceSingle(this, start, end, ETraceTypeQuery::TraceTypeQuery3, true, ignoreActor, EDrawDebugTrace::None, hit, true))
 	{
 		end = hit.Location;
 
@@ -216,7 +185,7 @@ void AFBaseWeapon::SpawnTraceBullet(FVector direction)
 
 		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
 		{
-			unit->ApplyDamage(ItemOwner, CurrentClip->BulletElement, WeaponProperty.BaseDamageValue, WeaponProperty.Piercing);
+			unit->ApplyDamage(ItemOwner, CurrentBulletElement, WeaponProperty.BaseDamageValue + CurrentBulletDamage, WeaponProperty.Piercing);
 		}
 	}
 	if (auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, WeaponProperty.TraceParticle, FTransform()))

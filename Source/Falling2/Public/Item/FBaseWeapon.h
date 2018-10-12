@@ -17,12 +17,31 @@ enum class EFireMode : uint8
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	ERifle	 = 1      UMETA(DisplayName = "Rifle"),
+	EBegin = 0,
+
+	ERifle = 1      UMETA(DisplayName = "Rifle"),
 	EShotgun = 1 << 1 UMETA(DisplayName = "Shotgun"),
-	ESniper  = 1 << 2 UMETA(DisplayName = "Sniper"),
+	ESniper = 1 << 2 UMETA(DisplayName = "Sniper"),
 	EGrenade = 1 << 3 UMETA(DisplayName = "Grenade"),
-	ERocket  = 1 << 4 UMETA(DisplayName = "Rocket"),
-	ELaser   = 1 << 5 UMETA(DisplayName = "Laser")
+	ERocket = 1 << 4 UMETA(DisplayName = "Rocket"),
+	ELaser = 1 << 5 UMETA(DisplayName = "Laser"),
+
+	EMax = MAX_uint8,
+};
+
+UENUM(BlueprintType)
+enum class EBulletElement : uint8
+{
+	EBegin = 0,
+
+	ENormal UMETA(DisplayName = "Normal"),
+	EIncendiary UMETA(DisplayName = "Incendiary"),
+	EFrozen UMETA(DisplayName = "Frozen"),
+	ECorrosive UMETA(DisplayName = "Corrosive"),
+	EExplosive UMETA(DisplayName = "Explosive"),
+	EBlackhole UMETA(DisplayName = "Blackhole"),
+
+	EMax = MAX_uint8,
 };
 
 USTRUCT()
@@ -149,43 +168,12 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 		FWeaponProperty WeaponProperty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
-		FName WeaponName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
-		FString Description;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
-		UParticleSystem* MuzzleParticle = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
-		UParticleSystem* TraceParticle = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponDescription")
-		UParticleSystem* HitParticle = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponTransform")
-		FVector WeaponLocation = FVector::ZeroVector;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponTransform")
-		FRotator WeaponRotator = FRotator::ZeroRotator;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
-		EFireMode FireMode = EFireMode::ESingleMode;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
-		EWeaponType WeaponType = EWeaponType::ERifle;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
-		bool IsMainWeapon = true;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
-		bool CanEquipSecondaryWeapon = false;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
-		float MaxCD = 1.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
-		float FireRange = 1000.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponProperty")
-		int DamageValue = 10;
-
-
 private:
 	float CurrentCD = 0.f;
 	bool isFire = false;
 	float CurrentScatteringAngle = 0.f;
+	EBulletElement CurrentBulletElement = EBulletElement::ENormal;
+	UINT8 CurrentBulletDamage = 0;
 
 public:
 	AFBaseWeapon();
@@ -205,8 +193,7 @@ public:
 
 protected:
 	bool CheckFire();
-	//Test use.
-	void Fire();
+
 	TArray<FVector> CalculationDirection();
 	void SpawnFire(const TArray<FVector>& directions);
 

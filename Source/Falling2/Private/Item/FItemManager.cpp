@@ -3,6 +3,7 @@
 #include "FItemManager.h"
 #include "FGameInstance.h"
 #include "FBaseWeapon.h"
+#include "FBaseClip.h"
 
 #include "Public/UObject/ConstructorHelpers.h"
 
@@ -24,6 +25,18 @@ AFItemManager::AFItemManager()
 		}
 	}
 
+	ConstructorHelpers::FObjectFinder<UDataTable> ClipData(TEXT("DataTable'/Game/Blueprints/DataTable/ClipDT.ClipDT'"));
+	if (ClipData.Succeeded())
+	{
+		ClipTable = ClipData.Object;
+		TArray<FClipListBP*> clipLists;
+		ClipTable->GetAllRows<FClipListBP>(TEXT(""), clipLists);
+		for (int i = 0; i < clipLists.Num(); i++)
+		{
+			ItemProps.Add(clipLists[i]->ItemProperty.ItemInternalName, clipLists[i]->ItemProperty);
+		}
+	}
+
 }
 
 AFBaseItem * AFItemManager::CreateItem(AActor* caller, FName itemName)
@@ -37,12 +50,24 @@ AFBaseItem * AFItemManager::CreateItem(AActor* caller, FName itemName)
 			switch (itemProp->ItemType)
 			{
 				case EItemType::EWeapon:
+				{
 					AFBaseWeapon* weapon = world->SpawnActor<AFBaseWeapon>(caller->GetActorLocation(), caller->GetActorRotation());
 					weapon->InitializeItem(*itemProp);
-					FWeaponListBP* list = itemManager->WeaponTable->FindRow<FWeaponListBP>(itemName, TEXT(""));
-					weapon->InitializeWeapon(list->WeaponProperty);
+					FWeaponListBP* weaponlist = itemManager->WeaponTable->FindRow<FWeaponListBP>(itemName, TEXT(""));
+					weapon->InitializeWeapon(weaponlist->WeaponProperty);
 					item = weapon;
 					break;
+				}
+				case EItemType::EClip:
+				{
+					AFBaseClip* clip = world->SpawnActor<AFBaseClip>(caller->GetActorLocation(), caller->GetActorRotation());
+					clip->InitializeItem(*itemProp);
+					FClipListBP* cliplist = itemManager->ClipTable->FindRow<FClipListBP>(itemName, TEXT(""));
+					clip->InitilizeClip(*cliplist);
+					item = clip;
+					break;
+				}
+				default:break;
 			}
 			return item;
 		}
