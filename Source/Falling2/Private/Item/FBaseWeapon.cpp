@@ -19,11 +19,14 @@ AFBaseWeapon::AFBaseWeapon()
 
 	FireArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("FireArrow"));
 	FireArrow->AttachTo(Mesh);
+	FireArrow->SetRelativeRotation(FRotator(0.f, 90.f, 0.f));
 }
 
 void AFBaseWeapon::InitializeWeapon(const FWeaponProperty & weaponProperty)
 {
 	WeaponProperty = weaponProperty;
+	Mesh->SetSkeletalMesh(weaponProperty.WeaponMesh);
+	FireArrow->SetRelativeLocation(weaponProperty.FireLocation);
 }
 
 void AFBaseWeapon::Tick(float DeltaTime)
@@ -32,7 +35,7 @@ void AFBaseWeapon::Tick(float DeltaTime)
 	{
 		CurrentCD -= DeltaTime;
 	}
-	else if (EFireMode::EBurstMode == FireMode && isFire)
+	else if (EFireMode::EBurstMode == WeaponProperty.FireMode && isFire)
 	{
 		CheckFire();
 	}
@@ -51,8 +54,9 @@ void AFBaseWeapon::EquipWeapon(class AFBaseUnit* owner)
 {
 	ItemOwner = owner;
 	Invisible(false);
-	SetActorRelativeLocation(WeaponLocation);
-	SetActorRelativeRotation(WeaponRotator);
+	AttachToComponent(owner->GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName("index_01_r"));
+	SetActorRelativeLocation(WeaponProperty.AttachLocation);
+	SetActorRelativeRotation(WeaponProperty.AttachRotation);
 }
 
 void AFBaseWeapon::Reload(class AFBaseClip* clip)
@@ -110,9 +114,11 @@ void AFBaseWeapon::Fire()
 			//unit->ApplyDamage(ItemOwner, DamageValue);
 		}
 	}
-	auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, TraceParticle, FTransform());
-	trace->SetBeamSourcePoint(0, start, 0);
-	trace->SetBeamTargetPoint(0, end, 0);
+	if (auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, TraceParticle, FTransform()))
+	{
+		trace->SetBeamSourcePoint(0, start, 0);
+		trace->SetBeamTargetPoint(0, end, 0);
+	}
 }
 
 bool AFBaseWeapon::CheckFire()
@@ -128,12 +134,12 @@ bool AFBaseWeapon::CheckFire()
 		return false;
 	}
 	--CurrentClip->CurrentBulletCount;*/
-	CurrentCD = MaxCD;
+	CurrentCD = WeaponProperty.MaxCD;
 	//Test use.
-	Fire();
+	//Fire();
 
-	/*TArray<FVector> directions = CalculationDirection();
-	SpawnFire(directions);*/
+	TArray<FVector> directions = CalculationDirection();
+	SpawnFire(directions);
 	return true;
 }
 
@@ -162,6 +168,7 @@ TArray<FVector> AFBaseWeapon::CalculationDirection()
 
 void AFBaseWeapon::SpawnFire(const TArray<FVector>& directions)
 {
+	UGameplayStatics::SpawnEmitterAttached(WeaponProperty.MuzzleParticle, FireArrow);
 	if (((UINT)WeaponProperty.WeaponType & ((UINT)EWeaponType::ERifle | (UINT)EWeaponType::EShotgun | (UINT)EWeaponType::ESniper)) > 0)
 	{
 		for (int i = 0; i < directions.Num(); ++i)
@@ -205,14 +212,16 @@ void AFBaseWeapon::SpawnTraceBullet(FVector direction)
 		FTransform hitTrans;
 		hitTrans.SetLocation(hit.Location);
 		hitTrans.SetRotation(hit.Normal.ToOrientationQuat());
-		UGameplayStatics::SpawnEmitterAtLocation(world, HitParticle, hitTrans);
+		UGameplayStatics::SpawnEmitterAtLocation(world, WeaponProperty.HitParticle, hitTrans);
 
 		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
 		{
 			unit->ApplyDamage(ItemOwner, CurrentClip->BulletElement, WeaponProperty.BaseDamageValue, WeaponProperty.Piercing);
 		}
 	}
-	auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, TraceParticle, FTransform());
-	trace->SetBeamSourcePoint(0, start, 0);
-	trace->SetBeamTargetPoint(0, end, 0);
+	if (auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, WeaponProperty.TraceParticle, FTransform()))
+	{
+		trace->SetBeamSourcePoint(0, start, 0);
+		trace->SetBeamTargetPoint(0, end, 0);
+	}
 }

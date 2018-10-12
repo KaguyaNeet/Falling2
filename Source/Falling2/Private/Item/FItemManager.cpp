@@ -12,7 +12,7 @@ AFItemManager::AFItemManager()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT(""));
+	ConstructorHelpers::FObjectFinder<UDataTable> WeaponData(TEXT("DataTable'/Game/Blueprints/DataTable/WeaponDT.WeaponDT'"));
 	if (WeaponData.Succeeded())
 	{
 		WeaponTable = WeaponData.Object;
@@ -32,11 +32,19 @@ AFBaseItem * AFItemManager::CreateItem(AActor* caller, FName itemName)
 	{
 		if (FItemProperty* itemProp = itemManager->ItemProps.Find(itemName))
 		{
+			UWorld* world = caller->GetWorld();
+			AFBaseItem* item = nullptr;
 			switch (itemProp->ItemType)
 			{
-				case EItemType::EWeapon:break;
+				case EItemType::EWeapon:
+					AFBaseWeapon* weapon = world->SpawnActor<AFBaseWeapon>(caller->GetActorLocation(), caller->GetActorRotation());
+					weapon->InitializeItem(*itemProp);
+					FWeaponListBP* list = itemManager->WeaponTable->FindRow<FWeaponListBP>(itemName, TEXT(""));
+					weapon->InitializeWeapon(list->WeaponProperty);
+					item = weapon;
+					break;
 			}
-			return nullptr;
+			return item;
 		}
 		else
 		{

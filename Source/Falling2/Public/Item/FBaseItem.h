@@ -12,6 +12,7 @@ UENUM(BlueprintType)
 enum class EItemType : uint8
 {
 	EWeapon UMETA(DisplayName = "Weapon"),
+	EThrowable UMETA(DisplayName = "Throwable"),
 };
 
 UENUM(BlueprintType)
