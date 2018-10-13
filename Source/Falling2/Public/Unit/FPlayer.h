@@ -36,6 +36,9 @@ public:
 	//Whether the turing is right turning.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "PlayerProperty")
 		bool RightTurn = false;
+	//Turn speed of this player;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerProperty")
+		float TurnSpeed = 2.f;
 
 	//The distance of the rolling
 	UPROPERTY(EditAnywhere, Category = "PlayerProperty")
@@ -65,7 +68,6 @@ private:
 	TArray<class AFBaseItem*> TriggerItems;
 	//The newest item that currently overlapping with the player character.
 	class AFBaseItem* CurrentChooseItem = nullptr;
-
 public:
 	AFPlayer();
 

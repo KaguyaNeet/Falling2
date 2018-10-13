@@ -32,6 +32,7 @@ AFPlayer::AFPlayer()
 	CorrectionArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("CorrectionArrow"));
 	CorrectionArrow->AttachTo(RootComponent);
 	CorrectionArrow->SetRelativeRotation(FRotator(0.f, -90.f, 0.f));
+
 	GetMesh()->AttachTo(CorrectionArrow);
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -73,7 +74,6 @@ void AFPlayer::BeginPlay()
 void AFPlayer::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 }
 
 
@@ -94,6 +94,10 @@ void AFPlayer::SetupPlayerInputComponent(class UInputComponent* inputComponent)
 
 void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 {
+	if (!AllowBaseAnimUpdate)
+	{
+		return;
+	}
 	if (APlayerController* controller = UGameplayStatics::GetPlayerController(this, 0))
 	{
 		FHitResult hit;
@@ -112,7 +116,7 @@ void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 			velocity.Rotation().Yaw >= 0.f ? sign = 1.f : sign = -1.f;
 			float velocityOffset = directionXY.Rotation().Yaw - velocity.Rotation().Yaw;
 			VelocityOffset = FMath::Abs(velocityOffset) > 180.f ? (360.f - FMath::Abs(velocityOffset)) * sign : velocityOffset;
-			GetMesh()->SetRelativeRotation(UKismetMathLibrary::RLerp(rotation, directionXY.Rotation(), DeltaTime * 5.f, true));
+			GetMesh()->SetRelativeRotation(UKismetMathLibrary::RLerp(rotation, directionXY.Rotation(), DeltaTime * TurnSpeed, true));
 		}
 		else
 		{
@@ -127,12 +131,12 @@ void AFPlayer::PlayerBaseAnimUpdate(float DeltaTime)
 			}
 			if (!Turn)
 			{
-				if (FMath::Abs(offset) > 0.35f)
+				if (FMath::Abs(offset) > 0.5f)
 					Turn = true;
 			}
 			else
 			{
-				GetMesh()->SetRelativeRotation(UKismetMathLibrary::RLerp(rotation, directionXY.Rotation(), DeltaTime * 5.f, true));
+				GetMesh()->SetRelativeRotation(UKismetMathLibrary::RLerp(rotation, directionXY.Rotation(), DeltaTime * TurnSpeed * 1.5f, true));
 				if (FMath::Abs(offset) <= 0.05f)
 					Turn = false;
 			}

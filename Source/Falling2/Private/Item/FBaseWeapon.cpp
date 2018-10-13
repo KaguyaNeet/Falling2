@@ -3,6 +3,8 @@
 #include "FBaseWeapon.h"
 #include "FBaseUnit.h"
 #include "FBullet.h"
+#include "FBuffManager.h"
+#include "FBuff.h"
 
 #include "Classes/Components/SkeletalMeshComponent.h"
 #include "Classes/Components/ArrowComponent.h"
@@ -170,6 +172,21 @@ void AFBaseWeapon::SpawnTraceBullet(FVector direction)
 		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
 		{
 			unit->ApplyDamage(ItemOwner, CurrentClipProperty.BulletElement, WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage, WeaponProperty.Piercing);
+			switch (CurrentClipProperty.BulletElement)
+			{
+				case EBulletElement::EFrozen: 
+				{
+					UFBuff* buff = UFBuffManager::CreateBuff(this, FName("Frozen"), (int)ItemProperty.ItemQuality * 3.f, (int)ItemProperty.ItemQuality, unit);
+					break;
+				}
+				case EBulletElement::EIncendiary:
+				{
+					UFBuffManager::CreateBuff(this, FName("Incendiary"), (int)ItemProperty.ItemQuality * 3.f, (int)ItemProperty.ItemQuality, unit);
+					break;
+				}
+				
+			}
+			
 		}
 	}
 	if (auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, WeaponProperty.TraceParticle, FTransform()))

@@ -20,7 +20,7 @@ UFBuffManager * UFGameInstance::GetBuffManager()
 {
 	if (nullptr == BuffManager)
 	{
-		BuffManager = NewObject<UFBuffManager>(this, UFBuffManager::StaticClass()->GetFName());
+		BuffManager = NewObject<UFBuffManager>();
 	}
 	return BuffManager;
 }

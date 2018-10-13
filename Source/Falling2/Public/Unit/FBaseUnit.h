@@ -16,6 +16,8 @@ public:
 	// Sets default values for this character's properties
 	AFBaseUnit();
 
+	void RemoveBuff(class UFBuff* buff);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,7 +36,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Equip(class AFBaseWeapon* weapon);
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void FrozenMaterial(bool choose);
+
 	virtual void ApplyDamage(AFBaseUnit* causer, EBulletElement element, UINT baseValue, UINT piercing);
+
+	void AddBuff(class UFBuff* buff);
+
+	UFBuff* FindBuff(class UFBuff* buff);
 
 public:
 	UPROPERTY()
@@ -45,7 +54,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Property")
 		int Armor = 0;
 
-	
+	bool AllowBaseAnimUpdate = true;
+
 private:
 	UPROPERTY()
 		TArray<class UFBuff*> Buffs;

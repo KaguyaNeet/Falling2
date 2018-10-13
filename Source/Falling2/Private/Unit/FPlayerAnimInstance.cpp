@@ -23,6 +23,7 @@ void UFPlayerAnimInstance::Tick(float DeltaTime)
 		isTurn = player->Turn;
 		isRightTurn = player->RightTurn;
 		isIdleTurn = OwnerMoveSpeed > 0.f ? false : true;
+		isAccelerating = (player->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0) ? true : false;
 	}
 }
 

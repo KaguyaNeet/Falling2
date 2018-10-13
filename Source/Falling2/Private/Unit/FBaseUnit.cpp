@@ -18,12 +18,17 @@ AFBaseUnit::AFBaseUnit()
 	
 }
 
+void AFBaseUnit::RemoveBuff(UFBuff * buff)
+{
+	Buffs.Remove(buff);
+}
+
 // Called when the game starts or when spawned
 void AFBaseUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StateMachine = NewObject<UFStateMachine>(this, UFStateMachine::StaticClass(), UFStateMachine::StaticClass()->GetFName());
+	StateMachine = NewObject<UFStateMachine>();
 }
 
 // Called every frame
@@ -37,6 +42,7 @@ void AFBaseUnit::Tick(float DeltaTime)
 	if (BuffTickCounter >= 1.f)
 	{
 		BuffTickCounter = 0.f;
+		TickBuff();
 	}
 }
 
@@ -56,6 +62,34 @@ void AFBaseUnit::ReleaseStateMachine()
 void AFBaseUnit::ApplyDamage(AFBaseUnit* causer, EBulletElement element, UINT baseValue, UINT piercing)
 {
 
+}
+
+void AFBaseUnit::AddBuff(UFBuff * buff)
+{
+	if (nullptr != buff)
+	{
+		Buffs.Add(buff);
+		buff->BuffStart();
+	}
+}
+
+UFBuff * AFBaseUnit::FindBuff(UFBuff* buff)
+{
+	UFBuff* result = nullptr;
+	if (nullptr != buff)
+	{
+		for (int i = 0; i < Buffs.Num(); ++i)
+		{
+			if (buff->BuffName == Buffs[i]->BuffName)
+				if (buff != Buffs[i])
+				{
+					result = Buffs[i];
+					break;
+				}
+		}
+	}
+	
+	return result;
 }
 
 void AFBaseUnit::TickBuff()

@@ -19,7 +19,7 @@ enum class EItemType : uint8
 UENUM(BlueprintType)
 enum class EItemQuality : uint8
 {
-	ENormal UMETA(DisplayName = "Normal"),
+	ENormal = 1 UMETA(DisplayName = "Normal"),
 };
 
 USTRUCT()

@@ -40,5 +40,7 @@ protected:
 		bool isRightTurn = false;
 	UPROPERTY(BlueprintReadOnly, Category = "Property")
 		bool isIdleTurn = false;
+	UPROPERTY(BlueprintReadOnly, Category = "Property")
+		bool isAccelerating = false;
 	
 };
