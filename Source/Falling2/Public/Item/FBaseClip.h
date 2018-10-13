@@ -7,28 +7,6 @@
 #include "Item/FBaseItem.h"
 #include "FBaseClip.generated.h"
 
-
-USTRUCT()
-struct FClipListBP : public FTableRowBase
-{
-	GENERATED_USTRUCT_BODY()
-
-public:
-	//Base property of this weapon.
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		FItemProperty ItemProperty;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		UStaticMesh* ClipMesh = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		EBulletElement BulletElement = EBulletElement::ENormal;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		EWeaponType WeaponType = EWeaponType::ERifle;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		int MaxBulletCount = 5;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		int BulletDamage = 1;
-};
-
 /**
  * 
  */

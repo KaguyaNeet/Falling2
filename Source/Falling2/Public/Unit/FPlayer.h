@@ -105,4 +105,6 @@ private:
 	//This function are attaching with the input event.it will add the CurrentChooseItem to player's bag.
 	void PickUp();
 
+	//Player reload
+	virtual void Reload() override;
 };

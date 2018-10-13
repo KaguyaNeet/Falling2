@@ -246,6 +246,14 @@ void AFPlayer::PickUp()
 	}
 }
 
+void AFPlayer::Reload()
+{
+	if (nullptr != CurrentWeapon && nullptr != Bag)
+	{
+		CurrentWeapon->Reload(Bag->GetClip(CurrentWeapon->CurrentClipProperty));
+	}
+}
+
 void AFPlayer::OnCapsuleBeginOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	

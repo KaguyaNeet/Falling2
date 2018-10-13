@@ -13,15 +13,15 @@ bool AFBag::AddItem(const FName& name)
 {
 	if (nullptr != Owner)
 	{
-		TArray<int*> result;
+		TArray<ItemInfo*> result;
 		Items.MultiFindPointer(name, result);
 		UINT8 maxNum = AFItemManager::GetMaxStackingNum(Owner, name);
 		bool needAdd = true;
 		for (int i = 0; i < result.Num(); ++i)
 		{
-			if (nullptr != result[i] && *result[i] < maxNum)
+			if (nullptr != result[i] && result[i]->Value < maxNum)
 			{
-				++(result[i]);
+				++(result[i]->Value);
 				needAdd = false;
 				break;
 			}
@@ -30,8 +30,14 @@ bool AFBag::AddItem(const FName& name)
 		{
 			if (Items.Num() < MaxItemNum)
 			{
-				Items.Add(name, 1);
-				return true;
+				if (FItemProperty* item = AFItemManager::GetItemProperty(this, name))
+				{
+					ItemInfo iteminfo = ItemInfo(*item, 1);
+					Items.Add(name, iteminfo);
+					return true;
+				}
+				return false;
+				
 			}
 			else
 			{
@@ -47,15 +53,11 @@ void AFBag::UseItem(const FName & name)
 {
 	if (nullptr != Owner)
 	{
-		if (int* itemNum = Items.Find(name))
+		if (ItemInfo* item = Items.Find(name))
 		{
-			if (AFBaseItem* item = AFItemManager::CreateItem(Owner, name))
+			if ((--(item->Value)) <= 0)
 			{
-				item->OnUse();
-				if ((--(*itemNum)) <= 0)
-				{
-					RemoveItem(name);
-				}
+				RemoveItem(name);
 			}
 		}
 	}
@@ -75,9 +77,40 @@ void AFBag::UpdateUMGItem()
 			UMGItems.Empty();
 			FUMGItemProperty umgItem;
 			umgItem.ItemProperty = *AFItemManager::GetItemProperty(Owner, it.Key);
-			umgItem.Count = it.Value;
+			umgItem.Count = it.Value.Value;
 			UMGItems.Add(umgItem);
 		}
 	}
+}
+
+FClipListBP AFBag::GetClip(const FClipListBP & clip)
+{
+	FClipListBP result = FClipListBP();
+	result = clip;
+	if (ItemInfo* item = Items.Find(clip.ItemProperty.ItemInternalName))
+	{
+		result.CurrentBulletCount = clip.MaxBulletCount;
+		UseItem(clip.ItemProperty.ItemInternalName);
+		return result;
+	}
+	for (auto it : Items)
+	{
+		if (EItemType::EClip == it.Value.Key.ItemType)
+		{
+			if (FClipListBP* list = AFItemManager::GetClipProperty(this, it.Value.Key.ItemInternalName))
+			{
+				if (clip.WeaponType == list->WeaponType)
+				{
+					result = *list;
+					result.CurrentBulletCount = result.MaxBulletCount;
+					UseItem(list->ItemProperty.ItemInternalName);
+					return result;
+				}
+			}
+
+		}
+	}
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Red, TEXT("No suitable Clip!"));
+	return result;
 }
 

@@ -53,8 +53,12 @@ AFBaseItem * AFItemManager::CreateItem(AActor* caller, FName itemName)
 				{
 					AFBaseWeapon* weapon = world->SpawnActor<AFBaseWeapon>(caller->GetActorLocation(), caller->GetActorRotation());
 					weapon->InitializeItem(*itemProp);
-					FWeaponListBP* weaponlist = itemManager->WeaponTable->FindRow<FWeaponListBP>(itemName, TEXT(""));
-					weapon->InitializeWeapon(weaponlist->WeaponProperty);
+					FWeaponListBP list = FWeaponListBP();
+					if (FWeaponListBP* weaponlist = itemManager->WeaponTable->FindRow<FWeaponListBP>(itemName, TEXT("")))
+					{
+						list = *weaponlist;
+					}
+					weapon->InitializeWeapon(list.WeaponProperty);
 					item = weapon;
 					break;
 				}
@@ -62,8 +66,12 @@ AFBaseItem * AFItemManager::CreateItem(AActor* caller, FName itemName)
 				{
 					AFBaseClip* clip = world->SpawnActor<AFBaseClip>(caller->GetActorLocation(), caller->GetActorRotation());
 					clip->InitializeItem(*itemProp);
-					FClipListBP* cliplist = itemManager->ClipTable->FindRow<FClipListBP>(itemName, TEXT(""));
-					clip->InitilizeClip(*cliplist);
+					FClipListBP list = FClipListBP();
+					if (FClipListBP* cliplist = itemManager->ClipTable->FindRow<FClipListBP>(itemName, TEXT("")))
+					{
+						list = *cliplist;
+					}
+					clip->InitilizeClip(list);
 					item = clip;
 					break;
 				}
@@ -75,26 +83,6 @@ AFBaseItem * AFItemManager::CreateItem(AActor* caller, FName itemName)
 		{
 			return nullptr;
 		}
-		//else
-		//{
-		//	UWorld* world = itemManager->GetWorld();
-		//	FWeaponList* weapon = itemManager->WeaponTable->FindRow<FWeaponList>(itemName, TEXT(""));
-		//	if (nullptr != weapon)
-		//	{
-		//		AFBaseItem* item = nullptr;
-		//		switch (weapon->WeaponType)
-		//		{
-		//			case EWeaponType::ERifle:item = world->SpawnActor<AFRifle>(FVector::ZeroVector, FRotator::ZeroRotator); break;
-		//			case EWeaponType::EShotgun:item = world->SpawnActor<AFShotgun>(FVector::ZeroVector, FRotator::ZeroRotator); break;
-		//			case EWeaponType::ESniper:item = world->SpawnActor<AFSniper>(FVector::ZeroVector, FRotator::ZeroRotator); break;
-		//			case EWeaponType::EGrenade:item = world->SpawnActor<AFSpawner>(FVector::ZeroVector, FRotator::ZeroRotator); break;
-		//			case EWeaponType::ELaser:item = world->SpawnActor<AFSpawner>(FVector::ZeroVector, FRotator::ZeroRotator); break;
-		//			case EWeaponType::ERocket:item = world->SpawnActor<AFSpawner>(FVector::ZeroVector, FRotator::ZeroRotator); break;
-		//			default:item = world->SpawnActor<AFRifle>(FVector::ZeroVector, FRotator::ZeroRotator); break;
-		//		}
-		//		return item;
-		//	}
-		//}
 	}
 	return nullptr;
 }
@@ -133,6 +121,16 @@ UINT8 AFItemManager::GetMaxStackingNum(AActor * caller, const FName & name)
 		{
 			result = prop->MaxStackingNum;
 		}
+	}
+	return result;
+}
+
+FClipListBP * AFItemManager::GetClipProperty(AActor * caller, const FName & name)
+{
+	FClipListBP* result = nullptr;
+	if (AFItemManager* manager = GetItemManager(caller))
+	{
+		result = manager->ClipTable->FindRow<FClipListBP>(name, TEXT(""));
 	}
 	return result;
 }

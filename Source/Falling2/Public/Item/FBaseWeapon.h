@@ -147,6 +147,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		FWeaponProperty WeaponProperty;
 };
+
+USTRUCT()
+struct FClipListBP : public FTableRowBase
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	//Base property of this weapon.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FItemProperty ItemProperty;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		UStaticMesh* ClipMesh = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		EBulletElement BulletElement = EBulletElement::ENormal;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		EWeaponType WeaponType = EWeaponType::ERifle;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int MaxBulletCount = 5;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int CurrentBulletCount = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int BulletDamage = 1;
+};
+
 /**
  * 
  */
@@ -162,7 +186,7 @@ public:
 		class UArrowComponent* FireArrow;
 
 public:
-	class AFBaseClip* CurrentClip = nullptr;
+	FClipListBP CurrentClipProperty;
 	AFBaseWeapon* SecondaryWeapon = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -172,8 +196,6 @@ private:
 	float CurrentCD = 0.f;
 	bool isFire = false;
 	float CurrentScatteringAngle = 0.f;
-	EBulletElement CurrentBulletElement = EBulletElement::ENormal;
-	UINT8 CurrentBulletDamage = 0;
 
 public:
 	AFBaseWeapon();
@@ -184,12 +206,10 @@ public:
 	virtual void Invisible(bool newState) override;
 
 	void EquipWeapon(class AFBaseUnit* owner);
-	void Reload(class AFBaseClip* clip);
+	void Reload(const FClipListBP& clip);
 
 	void StartFire();
 	void EndFire();
-
-	void RequestReload();
 
 protected:
 	bool CheckFire();

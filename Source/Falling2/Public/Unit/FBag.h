@@ -2,6 +2,7 @@
 
 #pragma once
 #include "FBaseItem.h"
+#include "FBaseWeapon.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -19,8 +20,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BagProperty")
 		int MaxItemNum = 20;
 
-	TMultiMap<FName, int> Items;
-
+	using ItemInfo = TPair<FItemProperty, int>;
+	TMultiMap<FName, ItemInfo> Items;
 	UPROPERTY(BlueprintReadOnly)
 		TArray<FUMGItemProperty> UMGItems;
 
@@ -30,11 +31,14 @@ public:
 	void Initialize(class AFBaseUnit* owner);
 
 	bool AddItem(const FName& name);
+
 	UFUNCTION(BlueprintCallable)
 		void UseItem(const FName& name);
+	
 	void RemoveItem(const FName& name);
 
 	void UpdateUMGItem();
 	
+	FClipListBP GetClip(const FClipListBP& clip);
 	
 };

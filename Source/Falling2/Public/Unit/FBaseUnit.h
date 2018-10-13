@@ -29,7 +29,7 @@ public:
 
 	void ReleaseStateMachine();
 
-	void Reload(){ }
+	virtual void Reload(){ }
 
 	UFUNCTION(BlueprintCallable)
 		void Equip(class AFBaseWeapon* weapon);

@@ -26,6 +26,7 @@ void AFBaseWeapon::InitializeWeapon(const FWeaponProperty & weaponProperty)
 	WeaponProperty = weaponProperty;
 	Mesh->SetSkeletalMesh(weaponProperty.WeaponMesh);
 	FireArrow->SetRelativeLocation(weaponProperty.FireLocation);
+	CurrentClipProperty.WeaponType = weaponProperty.WeaponType;
 }
 
 void AFBaseWeapon::Tick(float DeltaTime)
@@ -58,13 +59,9 @@ void AFBaseWeapon::EquipWeapon(class AFBaseUnit* owner)
 	SetActorRelativeRotation(WeaponProperty.AttachRotation);
 }
 
-void AFBaseWeapon::Reload(class AFBaseClip* clip)
+void AFBaseWeapon::Reload(const FClipListBP& clip)
 {
-	if (nullptr != CurrentClip)
-	{
-		CurrentClip->Destroy();
-	}
-	CurrentClip = clip;
+	CurrentClipProperty = clip;
 }
 
 void AFBaseWeapon::StartFire()
@@ -81,31 +78,18 @@ void AFBaseWeapon::EndFire()
 	isFire = false;
 }
 
-void AFBaseWeapon::RequestReload()
-{
-	if (nullptr != ItemOwner)
-	{
-		ItemOwner->Reload();
-	}
-}
-
 bool AFBaseWeapon::CheckFire()
 {
-	/*if (nullptr == CurrentClip)
+	if (CurrentClipProperty.CurrentBulletCount <= 0)
 	{
-		RequestReload();
+		if (nullptr != ItemOwner)
+		{
+			ItemOwner->Reload();
+		}
 		return false;
 	}
-	else if (CurrentClip->CurrentBulletCount <= 0)
-	{
-		RequestReload();
-		return false;
-	}
-	--CurrentClip->CurrentBulletCount;*/
+	--CurrentClipProperty.CurrentBulletCount;
 	CurrentCD = WeaponProperty.MaxCD;
-	//CurrentBulletElement = CurrentClip->BulletElement;
-	//CurrentBulletDamage = CurrentClip->BulletDamage;
-
 
 	TArray<FVector> directions = CalculationDirection();
 	SpawnFire(directions);
@@ -162,7 +146,7 @@ void AFBaseWeapon::SpawnActorBullet(FVector direction)
 		AFBullet* bullet = world->SpawnActor<AFBullet>(WeaponProperty.Bullet, FireArrow->GetComponentLocation(), direction.Rotation());
 		if (nullptr != bullet)
 		{
-			bullet->Initialize(ItemOwner, CurrentBulletElement, WeaponProperty.BaseDamageValue + CurrentBulletDamage, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
+			bullet->Initialize(ItemOwner, CurrentClipProperty.BulletElement, WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
 		}
 	}
 }
@@ -185,7 +169,7 @@ void AFBaseWeapon::SpawnTraceBullet(FVector direction)
 
 		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
 		{
-			unit->ApplyDamage(ItemOwner, CurrentBulletElement, WeaponProperty.BaseDamageValue + CurrentBulletDamage, WeaponProperty.Piercing);
+			unit->ApplyDamage(ItemOwner, CurrentClipProperty.BulletElement, WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage, WeaponProperty.Piercing);
 		}
 	}
 	if (auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, WeaponProperty.TraceParticle, FTransform()))

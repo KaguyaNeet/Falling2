@@ -2,9 +2,15 @@
 
 #include "FBaseClip.h"
 
+#include "Classes/Components/StaticMeshComponent.h"
+#include "Classes/Components/SphereComponent.h"
+
 AFBaseClip::AFBaseClip()
 {
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMesh->AttachTo(Trigger);
+	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	StaticMesh->SetRelativeScale3D(FVector(3.f, 3.f, 3.f));
 }
 
 
@@ -15,5 +21,6 @@ void AFBaseClip::InitilizeClip(const FClipListBP& ClipProperty)
 	BulletElement = ClipProperty.BulletElement;
 	WeaponType = ClipProperty.WeaponType;
 	BulletDamage = ClipProperty.BulletDamage;
+	StaticMesh->SetStaticMesh(ClipProperty.ClipMesh);
 }
 
