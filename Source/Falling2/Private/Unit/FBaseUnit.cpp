@@ -28,7 +28,7 @@ void AFBaseUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StateMachine = NewObject<UFStateMachine>();
+	StateMachine = NewObject<UFStateMachine>(this, UFStateMachine::StaticClass(), UFStateMachine::StaticClass()->GetFName());
 }
 
 // Called every frame
@@ -59,7 +59,7 @@ void AFBaseUnit::ReleaseStateMachine()
 	StateMachine = nullptr;
 }
 
-void AFBaseUnit::ApplyDamage(AFBaseUnit* causer, EBulletElement element, UINT baseValue, UINT piercing)
+void AFBaseUnit::ApplyDamage(AFBaseUnit* causer, UINT baseValue)
 {
 
 }

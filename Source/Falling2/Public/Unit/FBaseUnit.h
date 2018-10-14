@@ -39,7 +39,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 		void FrozenMaterial(bool choose);
 
-	virtual void ApplyDamage(AFBaseUnit* causer, EBulletElement element, UINT baseValue, UINT piercing);
+	virtual void ApplyDamage(AFBaseUnit* causer, UINT baseValue);
 
 	void AddBuff(class UFBuff* buff);
 
@@ -51,7 +51,7 @@ public:
 	
 	class AFBaseWeapon* CurrentWeapon = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Property")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Property")
 		int Armor = 0;
 
 	bool AllowBaseAnimUpdate = true;

@@ -41,7 +41,7 @@ UFStateBase* UFStateMachine::ChangeState(UClass* newState)
 	}
 	if (nullptr == state)
 	{
-		state = NewObject<UFStateBase>(this, newState);
+		state = NewObject<UFStateBase>(this, newState, newState->GetFName());
 		AFBaseUnit* unit = Cast<AFBaseUnit>(GetOuter());
 		state->Initialize(unit);
 		States.Add(state);

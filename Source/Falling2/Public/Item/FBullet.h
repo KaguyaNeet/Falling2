@@ -26,10 +26,12 @@ public:
 
 private:
 	EBulletElement Element = EBulletElement::ENormal;
+	EWeaponType WeaponType = EWeaponType::ERifle;
 	class AFBaseUnit* BulletOwner = nullptr;
 	UINT BaseDamage = 0;
 	float LifeTime = 10.f;
 	UINT Piercing = 0;
+	UINT Level = 0;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -43,9 +45,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Initialize(class AFBaseUnit* owner, EBulletElement element, UINT baseDamage, float Speed, float Range, UINT piercing);
+	virtual void Initialize(class AFBaseUnit* owner, EWeaponType weaponType, EBulletElement element, UINT level, UINT baseDamage, float Speed, float Range, UINT piercing);
 	virtual void DestroyBullet();
 	
 	UFUNCTION()
-		virtual void BulletHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+		virtual void BulletHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 };

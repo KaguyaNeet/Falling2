@@ -23,16 +23,16 @@ AFBullet::AFBullet()
 	BulletTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	BulletTrigger->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
 	BulletTrigger->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	BulletTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Block);
-	BulletTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+	BulletTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
+	BulletTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
 }
 
 // Called when the game starts or when spawned
 void AFBullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	BulletTrigger->OnComponentHit.AddDynamic(this, &AFBullet::BulletHit);
+
+	BulletTrigger->OnComponentBeginOverlap.AddDynamic(this, &AFBullet::BulletHit);
 }
 
 // Called every frame
@@ -51,7 +51,7 @@ void AFBullet::Tick(float DeltaTime)
 	
 }
 
-void AFBullet::Initialize(AFBaseUnit* owner, EBulletElement element, UINT baseDamage, float Speed, float Range, UINT piercing)
+void AFBullet::Initialize(AFBaseUnit* owner, EWeaponType weaponType, EBulletElement element, UINT level, UINT baseDamage, float Speed, float Range, UINT piercing)
 {
 	BulletMovement->Velocity = FVector(Speed, 0.f, 0.f);
 	BulletOwner = owner;
@@ -66,15 +66,15 @@ void AFBullet::DestroyBullet()
 	BulletTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void AFBullet::BulletHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
+void AFBullet::BulletHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (AFBaseUnit* unit = Cast<AFBaseUnit>(OtherActor))
 	{
-		unit->ApplyDamage(BulletOwner, Element, BaseDamage, Piercing);
-		if (!isPenetrating)
-		{
-			DestroyBullet();
-		}
+		//unit->ApplyDamage(BulletOwner, Element, BaseDamage, Piercing);
+		//if (!isPenetrating)
+		//{
+		//	DestroyBullet();
+		//}
 	}
 }
 

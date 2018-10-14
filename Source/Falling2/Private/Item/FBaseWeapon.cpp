@@ -12,6 +12,7 @@
 #include "Classes/Particles/ParticleSystemComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetStringLibrary.h"
 
 AFBaseWeapon::AFBaseWeapon()
 {
@@ -148,7 +149,7 @@ void AFBaseWeapon::SpawnActorBullet(FVector direction)
 		AFBullet* bullet = world->SpawnActor<AFBullet>(WeaponProperty.Bullet, FireArrow->GetComponentLocation(), direction.Rotation());
 		if (nullptr != bullet)
 		{
-			bullet->Initialize(ItemOwner, CurrentClipProperty.BulletElement, WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
+			//bullet->Initialize(ItemOwner, CurrentClipProperty.BulletElement, WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
 		}
 	}
 }
@@ -159,34 +160,58 @@ void AFBaseWeapon::SpawnTraceBullet(FVector direction)
 	FVector end = start + direction * WeaponProperty.FireRange;
 	TArray<AActor*> ignoreActor;
 	FHitResult hit;
+	TArray<FHitResult> hits;
 	UWorld* world = GetWorld();
-	if (UKismetSystemLibrary::LineTraceSingle(this, start, end, ETraceTypeQuery::TraceTypeQuery3, true, ignoreActor, EDrawDebugTrace::None, hit, true))
+	TArray<TEnumAsByte<EObjectTypeQuery>> types;
+	//WorldStatic
+	types.Add(EObjectTypeQuery::ObjectTypeQuery1);
+	//Pawn
+	types.Add(EObjectTypeQuery::ObjectTypeQuery3);
+	if (UKismetSystemLibrary::LineTraceMultiForObjects(this, start, end, types, true, ignoreActor, EDrawDebugTrace::None, hits, true))
 	{
-		end = hit.Location;
-
 		FTransform hitTrans;
-		hitTrans.SetLocation(hit.Location);
-		hitTrans.SetRotation(hit.Normal.ToOrientationQuat());
-		UGameplayStatics::SpawnEmitterAtLocation(world, WeaponProperty.HitParticle, hitTrans);
-
-		if (AFBaseUnit* unit = Cast<AFBaseUnit>(hit.Actor))
+		int currentPiercing = WeaponProperty.Piercing;
+		const uint8 hitnum = hits.Num();
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, UKismetStringLibrary::Conv_IntToString(hitnum));
+		for (int i = 0; i < hits.Num(); ++i)
 		{
-			unit->ApplyDamage(ItemOwner, CurrentClipProperty.BulletElement, WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage, WeaponProperty.Piercing);
-			switch (CurrentClipProperty.BulletElement)
+			hitTrans.SetLocation(hits[i].Location);
+			hitTrans.SetRotation(hits[i].Normal.ToOrientationQuat());
+			UGameplayStatics::SpawnEmitterAtLocation(world, WeaponProperty.HitParticle, hitTrans);
+			if (AFBaseUnit* unit = Cast<AFBaseUnit>(hits[i].Actor))
 			{
-				case EBulletElement::EFrozen: 
+				int currentArmor = unit->Armor - currentPiercing;
+				currentPiercing -= unit->Armor;
+				UINT trueDamage = WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage;
+				if (currentArmor > 0)
 				{
-					UFBuff* buff = UFBuffManager::CreateBuff(this, FName("Frozen"), (int)ItemProperty.ItemQuality * 3.f, (int)ItemProperty.ItemQuality, unit);
+					trueDamage = trueDamage - (trueDamage * (currentArmor / 10));
+				}
+				unit->ApplyDamage(ItemOwner, trueDamage);
+				switch (CurrentClipProperty.BulletElement)
+				{
+					case EBulletElement::EFrozen: 
+					{
+						UFBuffManager::CreateBuff(this, FName("Frozen"), (int)ItemProperty.ItemQuality * 3.f, (int)ItemProperty.ItemQuality, unit);
+						break;
+					}
+					case EBulletElement::EIncendiary:
+					{
+						UFBuffManager::CreateBuff(this, FName("Incendiary"), (int)ItemProperty.ItemQuality * 3.f, (int)ItemProperty.ItemQuality, unit);
+						break;
+					}
+				}
+				if (currentPiercing <= 0)
+				{
+					end = hits[i].Location;
 					break;
 				}
-				case EBulletElement::EIncendiary:
-				{
-					UFBuffManager::CreateBuff(this, FName("Incendiary"), (int)ItemProperty.ItemQuality * 3.f, (int)ItemProperty.ItemQuality, unit);
-					break;
-				}
-				
 			}
-			
+			else
+			{
+				end = hits[i].Location;
+				break;
+			}
 		}
 	}
 	if (auto trace = UGameplayStatics::SpawnEmitterAtLocation(world, WeaponProperty.TraceParticle, FTransform()))
