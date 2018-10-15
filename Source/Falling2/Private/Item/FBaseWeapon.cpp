@@ -149,7 +149,7 @@ void AFBaseWeapon::SpawnActorBullet(FVector direction)
 		AFBullet* bullet = world->SpawnActor<AFBullet>(WeaponProperty.Bullet, FireArrow->GetComponentLocation(), direction.Rotation());
 		if (nullptr != bullet)
 		{
-			//bullet->Initialize(ItemOwner, CurrentClipProperty.BulletElement, WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
+			bullet->Initialize(ItemOwner, WeaponProperty.WeaponType, CurrentClipProperty.BulletElement, (UINT)ItemProperty.ItemQuality, WeaponProperty.BaseDamageValue + CurrentClipProperty.BulletDamage, WeaponProperty.BulletSpeed, WeaponProperty.FireRange, WeaponProperty.Piercing);
 		}
 	}
 }

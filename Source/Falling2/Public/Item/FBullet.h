@@ -17,6 +17,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		class UProjectileMovementComponent* BulletMovement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+		class UArrowComponent* RootArrow;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		class UStaticMeshComponent* BulletMesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		class UBoxComponent* BulletTrigger;
@@ -32,6 +34,8 @@ private:
 	float LifeTime = 10.f;
 	UINT Piercing = 0;
 	UINT Level = 0;
+	float BulletSpeed = 0.f;
+	UINT isPenetrate = 0;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -50,4 +54,6 @@ public:
 	
 	UFUNCTION()
 		virtual void BulletHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+	UFUNCTION()
+		virtual void BulletEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

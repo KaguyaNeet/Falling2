@@ -6,6 +6,7 @@
 #include "Classes/GameFramework/ProjectileMovementComponent.h"
 #include "Classes/Components/StaticMeshComponent.h"
 #include "Classes/Components/BoxComponent.h"
+#include "Classes/Components/ArrowComponent.h"
 // Sets default values
 AFBullet::AFBullet()
 {
@@ -14,17 +15,20 @@ AFBullet::AFBullet()
 
 	BulletMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("BulletMovement"));
 
-	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
-	BulletMesh->SetupAttachment(RootComponent);
-	BulletMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RootArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("RootArrow"));
+	RootArrow->SetupAttachment(RootComponent);
 	
 	BulletTrigger = CreateDefaultSubobject<UBoxComponent>(TEXT("BulletTrigger"));
-	BulletTrigger->SetupAttachment(BulletMesh);
+	BulletTrigger->SetupAttachment(RootArrow);
 	BulletTrigger->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	BulletTrigger->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
-	BulletTrigger->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	BulletTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Overlap);
+	BulletTrigger->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel3);
+	BulletTrigger->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	BulletTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel3, ECollisionResponse::ECR_Ignore);
 	BulletTrigger->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Overlap);
+
+	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletMesh"));
+	BulletMesh->SetupAttachment(BulletTrigger);
+	BulletMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +37,7 @@ void AFBullet::BeginPlay()
 	Super::BeginPlay();
 
 	BulletTrigger->OnComponentBeginOverlap.AddDynamic(this, &AFBullet::BulletHit);
+	BulletTrigger->OnComponentEndOverlap.AddDynamic(this, &AFBullet::BulletEndOverlap);
 }
 
 // Called every frame
@@ -40,14 +45,18 @@ void AFBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (LifeTime > 0.f)
+	if (0 == isPenetrate)
 	{
-		LifeTime -= DeltaTime;
+		if (LifeTime > 0.f)
+		{
+			LifeTime -= DeltaTime;
+		}
+		else
+		{
+			DestroyBullet();
+		}
 	}
-	else
-	{
-		DestroyBullet();
-	}
+	
 	
 }
 
@@ -59,10 +68,18 @@ void AFBullet::Initialize(AFBaseUnit* owner, EWeaponType weaponType, EBulletElem
 	LifeTime = Range / Speed;
 	Element = element;
 	Piercing = piercing;
+	WeaponType = weaponType;
+	BulletSpeed = Speed;
+	if (EWeaponType::ELaser == WeaponType)
+	{
+		isPenetrating = true;
+	}
+	BulletMovement->SetVelocityInLocalSpace(FVector(BulletSpeed, 0.f, 0.f));
 }
 
 void AFBullet::DestroyBullet()
 {
+	Destroy();
 	BulletTrigger->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
@@ -70,11 +87,37 @@ void AFBullet::BulletHit(UPrimitiveComponent* OverlappedComponent, AActor* Other
 {
 	if (AFBaseUnit* unit = Cast<AFBaseUnit>(OtherActor))
 	{
+		if (BulletOwner == unit)
+		{
+			return;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, TEXT("Hit"));
+		if (EWeaponType::ELaser == WeaponType)
+		{
+			++isPenetrate;
+			BulletMovement->SetVelocityInLocalSpace(FVector(BulletSpeed * 0.3f, 0.f, 0.f));
+		}
 		//unit->ApplyDamage(BulletOwner, Element, BaseDamage, Piercing);
-		//if (!isPenetrating)
-		//{
-		//	DestroyBullet();
-		//}
+		if (!isPenetrating)
+		{
+			DestroyBullet();
+		}
+	}
+	else
+	{
+		Destroy();
+	}
+}
+
+void AFBullet::BulletEndOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex)
+{
+	if (AFBaseUnit* unit = Cast<AFBaseUnit>(OtherActor))
+	{
+		if (EWeaponType::ELaser == WeaponType)
+		{
+			--isPenetrate;
+			BulletMovement->SetVelocityInLocalSpace(FVector(BulletSpeed, 0.f, 0.f));
+		}
 	}
 }
 
