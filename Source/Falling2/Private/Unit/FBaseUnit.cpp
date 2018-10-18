@@ -28,7 +28,8 @@ void AFBaseUnit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StateMachine = NewObject<UFStateMachine>(this, UFStateMachine::StaticClass(), UFStateMachine::StaticClass()->GetFName());
+	FName name = MakeUniqueObjectName(this, UFStateMachine::StaticClass());
+	StateMachine = NewObject<UFStateMachine>(this, UFStateMachine::StaticClass(), name);
 }
 
 // Called every frame

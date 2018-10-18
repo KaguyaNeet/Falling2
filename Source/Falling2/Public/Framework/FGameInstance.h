@@ -20,9 +20,12 @@ private:
 	UPROPERTY()
 		class UFBuffManager* BuffManager = nullptr;
 
+	class AFUnitManager* UnitManager = nullptr;
+
 public:
 	class AFItemManager* GetItemManager();
 	class UFBuffManager* GetBuffManager();
+	class AFUnitManager* GetUnitManager();
 	
 	
 };

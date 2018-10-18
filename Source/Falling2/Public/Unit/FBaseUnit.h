@@ -7,6 +7,14 @@
 #include "GameFramework/Character.h"
 #include "FBaseUnit.generated.h"
 
+UENUM(BlueprintType)
+enum class EUnitCamp : uint8
+{
+	EFriendly UMETA(DisplayName = "Friendly"),
+	EHostility UMETA(DisplayName = "Hostility"),
+	ENeutral UMETA(DisplayName = "Neutral"),
+};
+
 UCLASS()
 class FALLING2_API AFBaseUnit : public ACharacter
 {
@@ -55,6 +63,8 @@ public:
 		int Armor = 0;
 
 	bool AllowBaseAnimUpdate = true;
+
+	EUnitCamp UnitCamp = EUnitCamp::EFriendly;
 
 private:
 	UPROPERTY()

@@ -3,6 +3,7 @@
 #include "FGameInstance.h"
 #include "FItemManager.h"
 #include "FBuffManager.h"
+#include "FUnitManager.h"
 
 AFItemManager * UFGameInstance::GetItemManager()
 {
@@ -23,4 +24,16 @@ UFBuffManager * UFGameInstance::GetBuffManager()
 		BuffManager = NewObject<UFBuffManager>();
 	}
 	return BuffManager;
+}
+
+AFUnitManager * UFGameInstance::GetUnitManager()
+{
+	if (nullptr == UnitManager)
+	{
+		if (UWorld* world = GetWorld())
+		{
+			UnitManager = world->SpawnActor<AFUnitManager>(FVector::ZeroVector, FRotator::ZeroRotator);
+		}
+	}
+	return UnitManager;
 }

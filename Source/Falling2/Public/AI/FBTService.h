@@ -14,7 +14,10 @@ class FALLING2_API UFBTService : public UBTService
 {
 	GENERATED_BODY()
 	
-	
+public:
+	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
+	//void RecieveTickAI(class ABAIController* controller, class ABCharacterBase* character, class UBlackboardComponent* blackboard, float DeltaTime);
 	
 	
 };
