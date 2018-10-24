@@ -6,6 +6,7 @@
 
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 void UFBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -15,10 +16,19 @@ void UFBTService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	UBlackboardComponent* blackboard = OwnerComp.GetAIOwner()->GetBlackboardComponent();
 	if (nullptr != controller && nullptr != character && nullptr != blackboard)
 	{
+		
 		if (AFBaseUnit* unit = Cast<AFBaseUnit>(blackboard->GetValueAsObject(FName("Target"))))
 		{
 			float distance = FVector::Distance(unit->GetActorLocation(), character->GetActorLocation());
 			blackboard->SetValueAsFloat(FName("Distance"), distance);
 		}
+		else
+		{
+			if (AFBaseUnit* unit = Cast<AFBaseUnit>(UGameplayStatics::GetPlayerController(controller, 0)->GetPawn()))
+			{
+				blackboard->SetValueAsObject(FName("Target"), unit);
+			}
+		}
+		blackboard->SetValueAsEnum(FName("AIState"), (uint8)controller->UpdateAIState());
 	}
 }

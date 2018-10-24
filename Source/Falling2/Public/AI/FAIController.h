@@ -6,6 +6,14 @@
 #include "AIController.h"
 #include "FAIController.generated.h"
 
+UENUM(BlueprintType)
+enum class EAIState : uint8
+{
+	EPatrol UMETA(DisplayName = "Patrol"),
+	ETrack UMETA(DisplayName = "Track"),
+	EAttack UMETA(DisplayName = "Attack"),
+};
+
 /**
  * 
  */
@@ -21,15 +29,19 @@ public:
 
 	virtual void Possess(APawn* InPawn) override;
 
+	virtual EAIState UpdateAIState();
+
 protected:
 	virtual void Tick(float DeltaTime) override;
-	
 	
 public:
 	UPROPERTY()
 		class UBehaviorTreeComponent* BehaviorTreeComponent;
 	UPROPERTY()
 		class UBlackboardComponent* BlackboardComponent;
+
+	UPROPERTY(BlueprintReadWrite)
+		EAIState AIState = EAIState::EPatrol;
 	
 	
 };

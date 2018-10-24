@@ -22,5 +22,7 @@ public:
 		class UBehaviorTree* BehaviorTree = nullptr;
 	UPROPERTY(EditAnywhere, Category = "AI")
 		float AlertDistance = 1000.f;
+	UPROPERTY(EditAnywhere, Category = "AI")
+		float AttackDistance = 100.f;
 	
 };
