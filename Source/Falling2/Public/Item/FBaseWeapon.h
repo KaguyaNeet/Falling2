@@ -38,7 +38,7 @@ enum class EBulletElement : uint8
 	EIncendiary UMETA(DisplayName = "Incendiary"),
 	EFrozen UMETA(DisplayName = "Frozen"),
 	ECorrosive UMETA(DisplayName = "Corrosive"),
-	EExplosive UMETA(DisplayName = "Explosive"),
+	ELightning UMETA(DisplayName = "Lightning"),
 	EBlackhole UMETA(DisplayName = "Blackhole"),
 
 	EMax = MAX_uint8,
