@@ -4,19 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "FBuff.generated.h"
+#include "FUnitObserver.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class FALLING2_API UFBuff : public UObject
+class FALLING2_API UFUnitObserver : public UObject
 {
 	GENERATED_BODY()
 	
-public:
-	//Tick this buff
-	void TickBuff();
+	
 	
 	
 };

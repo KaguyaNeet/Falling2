@@ -1,6 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "FBaseUnit.h"
+#include "FBuff.h"
+#include "FMainGameMode.h"
+#include "FUnitObserverManager.h"
 
 
 // Sets default values
@@ -16,6 +19,8 @@ void AFBaseUnit::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//Create unit observer manager
+	UnitObserverManager = NewObject<UFUnitObserverManager>(this, UFUnitObserverManager::StaticClass(), MakeUniqueObjectName(this, UFUnitObserverManager::StaticClass()));
 }
 
 // Called every frame
@@ -23,6 +28,7 @@ void AFBaseUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	TickBuff(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -30,5 +36,25 @@ void AFBaseUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AFBaseUnit::ApplyDamage(const Damage & damage)
+{
+	UFUnitObserverManager::BroadcastDamageEvent(UnitObserverManager, this, damage);
+
+
+}
+
+void AFBaseUnit::TickBuff(float delta)
+{
+	BuffTickTimer += delta;
+	if (BuffTickTimer >= BUFF_TICK_INTERVAL)
+	{
+		BuffTickTimer = 0.f;
+		for (auto it : Buffs)
+		{
+			it->TickBuff();
+		}
+	}
 }
 

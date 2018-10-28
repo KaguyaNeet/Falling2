@@ -3,20 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
-#include "FBuff.generated.h"
+#include "GameFramework/GameMode.h"
+#include "FMainGameMode.generated.h"
+
+const float BUFF_TICK_INTERVAL = 1.f;
 
 /**
  * 
  */
 UCLASS()
-class FALLING2_API UFBuff : public UObject
+class FALLING2_API AFMainGameMode : public AGameMode
 {
 	GENERATED_BODY()
 	
-public:
-	//Tick this buff
-	void TickBuff();
+	
 	
 	
 };
