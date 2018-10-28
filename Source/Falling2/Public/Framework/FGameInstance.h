@@ -21,11 +21,13 @@ private:
 		class UFBuffManager* BuffManager = nullptr;
 
 	class AFUnitManager* UnitManager = nullptr;
+	class AFRoomManager* RoomManager = nullptr;
 
 public:
 	class AFItemManager* GetItemManager();
 	class UFBuffManager* GetBuffManager();
 	class AFUnitManager* GetUnitManager();
+	class AFRoomManager* GetRoomManager();
 	
 	
 };

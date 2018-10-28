@@ -4,6 +4,7 @@
 #include "FItemManager.h"
 #include "FBuffManager.h"
 #include "FUnitManager.h"
+#include "FRoomManager.h"
 
 AFItemManager * UFGameInstance::GetItemManager()
 {
@@ -36,4 +37,16 @@ AFUnitManager * UFGameInstance::GetUnitManager()
 		}
 	}
 	return UnitManager;
+}
+
+AFRoomManager * UFGameInstance::GetRoomManager()
+{
+	if (nullptr == RoomManager)
+	{
+		if (UWorld* world = GetWorld())
+		{
+			UnitManager = world->SpawnActor<AFRoomManager>(FVector::ZeroVector, FRotator::ZeroRotator);
+		}
+	}
+	return RoomManager;
 }
