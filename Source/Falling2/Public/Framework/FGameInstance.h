@@ -14,7 +14,11 @@ class FALLING2_API UFGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 	
-	
+private:
+	class AFBuffManager* BuffManager = nullptr;
+
+public:
+	class AFBuffManager* GetBuffManager();
 	
 	
 };

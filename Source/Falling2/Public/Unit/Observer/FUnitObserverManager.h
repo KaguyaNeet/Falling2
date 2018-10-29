@@ -14,7 +14,12 @@ class FALLING2_API UFUnitObserverManager : public UObject
 {
 	GENERATED_BODY()
 	
+private:
+	// Observers that this unit owned
+	TArray<class UFUnitObserver*> Observers;
+
 public:
+	// Broadcast the damage event
 	static void BroadcastDamageEvent(UFUnitObserverManager* manager, class AFBaseUnit* owner, const struct Damage& damage);
 	
 	
