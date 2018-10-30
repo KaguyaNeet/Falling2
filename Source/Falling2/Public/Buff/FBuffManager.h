@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "FBuffManager.generated.h"
 
+#define Implement_BUFF(name)
 
 #define Declare_BUFF(name) \
 	namespace name \
@@ -21,9 +22,9 @@
 	disable = &BuffFunction::name::BuffDisable_##name; \
 	Funcs.Add(FName(#name), BuffFuncs(enable, tick, disable)); \
 
-#define Implement_BUFF_Enable(name) void BuffFunction::name::BuffEnable_##name(AFBaseUnit* owner, class AFBaseUnit* adder,  UFBuff* buff, UINT lifetime, UINT level)
-#define Implement_BUFF_Tick(name) void BuffFunction::name::BuffTick_##name(AFBaseUnit* owner, class AFBaseUnit* adder,  UFBuff* buff, UINT lifetime, UINT level)
-#define Implement_BUFF_Disable(name) void BuffFunction::name::BuffDisable_##name(AFBaseUnit* owner, class AFBaseUnit* adder,  UFBuff* buff, UINT lifetime, UINT level)
+#define Implement_BUFF_Enable(name) void BuffFunction::name::BuffEnable_##name(AFBaseUnit* owner, AFBaseUnit* adder,  UFBuff* buff, UINT lifetime, UINT level)
+#define Implement_BUFF_Tick(name) void BuffFunction::name::BuffTick_##name(AFBaseUnit* owner, AFBaseUnit* adder,  UFBuff* buff, UINT lifetime, UINT level)
+#define Implement_BUFF_Disable(name) void BuffFunction::name::BuffDisable_##name(AFBaseUnit* owner, AFBaseUnit* adder,  UFBuff* buff, UINT lifetime, UINT level)
 
 UCLASS()
 class FALLING2_API AFBuffManager : public AActor
@@ -42,21 +43,18 @@ public:
 	};
 	
 private:
+	// Already registered buffs
 	TMap<FName, BuffFuncs> Funcs;
+
+	UPROPERTY()
+		UParticleSystem* FrozenParticle = nullptr;
 
 
 public:	
 	// Sets default values for this actor's properties
 	AFBuffManager();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	/** 
 	 * Create a buff by buff name
 	 * @param caller, Actor that call this function

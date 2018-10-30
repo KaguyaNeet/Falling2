@@ -86,6 +86,9 @@ public:
 
 	// Reset this buff's lifetime
 	void ResetBuff(UINT time);
+
+	// Return type of this buff
+	UINT GetBuffType();
 	
 	
 };

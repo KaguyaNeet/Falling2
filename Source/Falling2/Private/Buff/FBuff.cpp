@@ -56,3 +56,8 @@ void UFBuff::ResetBuff(UINT time)
 	}
 }
 
+UINT UFBuff::GetBuffType()
+{
+	return Attribute.BuffType;
+}
+

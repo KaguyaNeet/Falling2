@@ -6,26 +6,25 @@
 #include "FGameInstance.h"
 
 #include "GameFramework/Actor.h"
+#include "Public/UObject/ConstructorHelpers.h"
 
 // Sets default values
 AFBuffManager::AFBuffManager()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
-}
+	BuffFunc enable = nullptr;
+	BuffFunc tick = nullptr;
+	BuffFunc disable = nullptr;
+	Register_BUFF(Incendiary);
+	Register_BUFF(Frozen);
 
-// Called when the game starts or when spawned
-void AFBuffManager::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AFBuffManager::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	//ConstructorHelpers::FObjectFinder<UParticleSystem> FrozenP(TEXT("ParticleSystem'/Game/Particles/P_ICe.P_ICe'"));
+	//if (FrozenP.Succeeded())
+	//{
+	//	FrozenParticle = FrozenP.Object;
+	//}
 
 }
 
@@ -51,12 +50,12 @@ UFBuff * AFBuffManager::CreateBuff(AActor * caller, const FName & name, AFBaseUn
 			buff->Initialize(attribute);
 			if (nullptr != owner)
 			{
-				//owner->AddBuff(attribute);
+				owner->AddBuff(buff);
 			}
 		}
 
 	}
-	return nullptr;
+	return buff;
 }
 
 AFBuffManager * AFBuffManager::GetBuffManager(AActor * caller)
@@ -69,3 +68,53 @@ AFBuffManager * AFBuffManager::GetBuffManager(AActor * caller)
 	return manager;
 }
 
+// Implement the Incendiary buff
+Implement_BUFF_Enable(Incendiary)
+{
+
+}
+Implement_BUFF_Tick(Incendiary)
+{
+
+}
+Implement_BUFF_Disable(Incendiary)
+{
+	
+}
+
+// Implement the Frozen buff
+Implement_BUFF_Enable(Frozen)
+{
+	if (AFBuffManager* manager = AFBuffManager::GetBuffManager(owner))
+	{
+		//FTransform transform = owner->GetActorTransform();
+		//transform.SetLocation(FVector(owner->GetActorLocation().X, owner->GetActorLocation().Y, owner->GetActorLocation().Z - owner->GetCapsuleComponent()->GetScaledCapsuleHalfHeight()));
+		//auto particle = UGameplayStatics::SpawnEmitterAtLocation(owner->GetWorld(), manager->FrozenParticle, transform);
+		//particle->SetFloatParameter(FName("LifeTime"), value2);
+		//particle->SetFloatParameter(FName("LifeTime2"), value2);
+
+		//if (UFBuff* findbuff = owner->FindBuff(buff))
+		//{
+		//	findbuff->ResetBuff(value2);
+		//	owner->RemoveBuff(buff);
+		//	buff->isAlive = false;
+		//	return;
+		//}
+		//owner->FrozenMaterial(true);
+	}
+	//owner->GetCharacterMovement()->SetActive(false);
+	//owner->GetMesh()->SetActive(false);
+	//owner->AllowBaseAnimUpdate = false;
+}
+Implement_BUFF_Tick(Frozen)
+{
+
+}
+Implement_BUFF_Disable(Frozen)
+{
+	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, TEXT("BuffEndFrozen"));
+	//owner->GetCharacterMovement()->SetActive(true);
+	//owner->GetMesh()->SetActive(true);
+	//owner->AllowBaseAnimUpdate = true;
+	//owner->FrozenMaterial(false);
+}

@@ -45,6 +45,33 @@ void AFBaseUnit::ApplyDamage(const Damage & damage)
 
 }
 
+void AFBaseUnit::AddBuff(UFBuff * buff)
+{
+	if (nullptr != buff)
+	{
+		Buffs.Add(buff);
+		buff->StartBuff();
+	}
+}
+
+bool AFBaseUnit::RemoveBuffByType(UINT8 buffType)
+{
+	bool result = false;
+
+	for (auto it : Buffs)
+	{
+		if ((it->GetBuffType() & buffType) > 0)
+		{
+			it->EndBuff();
+			it = nullptr;
+			result = true;
+		}
+	}
+	Buffs.Remove(nullptr);
+
+	return result;
+}
+
 void AFBaseUnit::TickBuff(float delta)
 {
 	BuffTickTimer += delta;

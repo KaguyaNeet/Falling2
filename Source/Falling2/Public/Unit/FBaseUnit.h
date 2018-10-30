@@ -83,10 +83,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UnitProperty")
 		EUnitCamp UnitCamp = EUnitCamp::EPlayer;
 
-	// The buff owned by this unit
-	UPROPERTY()
-		TArray<class UFBuff*> Buffs;
-
 	// The observer manager of this unit
 	UPROPERTY()
 		class UFUnitObserverManager* UnitObserverManager = nullptr;
@@ -111,6 +107,12 @@ public:
 	// Cause damage to this unit
 	virtual void ApplyDamage(const Damage& damage);
 
+	// Add buff for this unit
+	void AddBuff(class UFBuff* buff);
+
+	// Remove buff from this unit by buff type
+	bool RemoveBuffByType(UINT8 buffType);
+
 private:
 	// Tick buffs of this unit
 	void TickBuff(float delta);
@@ -119,5 +121,9 @@ private:
 private:
 	// The buff tick timer
 	float BuffTickTimer = 0.f;
+
+	// The buff owned by this unit
+	UPROPERTY()
+		TArray<class UFBuff*> Buffs;
 	
 };
