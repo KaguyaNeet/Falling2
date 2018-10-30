@@ -23,6 +23,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Initialize the bullet
+	void Initialize(){ }
+
 	
 	
 };

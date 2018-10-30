@@ -2,19 +2,11 @@
 
 #pragma once
 #include "Engine/DataTable.h"
+#include "FWeapon.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "FBaseUnit.generated.h"
-
-UENUM(BlueprintType)
-enum class EElemental : uint8
-{
-	ENormal UMETA(DisplayName = "Normal"),
-	EFire UMETA(DisplayName = "Fire"),
-	EIce UMETA(DisplayName = "Ice"),
-	EThunder UMETA(DisplayName = "Thunder"),
-};
 
 struct Damage
 {
@@ -28,7 +20,7 @@ struct Damage
 	UINT Piercing = 0;
 
 	// The elemental of this damage
-	EElemental Elemental = EElemental::ENormal;
+	EWeaponElemental Elemental = EWeaponElemental::ENormal;
 
 	// The level of this damage's elemental
 	UINT ElementLevel = 1;

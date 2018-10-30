@@ -6,6 +6,15 @@
 #include "Item/FBaseItem.h"
 #include "FWeapon.generated.h"
 
+UENUM(BlueprintType)
+enum class EWeaponElemental : uint8
+{
+	ENormal UMETA(DisplayName = "Normal"),
+	EFire UMETA(DisplayName = "Fire"),
+	EIce UMETA(DisplayName = "Ice"),
+	EThunder UMETA(DisplayName = "Thunder"),
+};
+
 /**
  * 
  */
