@@ -79,6 +79,9 @@ public:
 	UPROPERTY()
 		class UFUnitObserverManager* UnitObserverManager = nullptr;
 
+	UPROPERTY()
+		class UFStateMachine* AnimStateMachine = nullptr;
+
 
 
 public:

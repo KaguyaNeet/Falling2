@@ -4,6 +4,7 @@
 #include "FBuff.h"
 #include "FMainGameMode.h"
 #include "FUnitObserverManager.h"
+#include "FStateMachine.h"
 
 
 // Sets default values
