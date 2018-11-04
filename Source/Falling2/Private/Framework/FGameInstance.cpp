@@ -2,6 +2,7 @@
 
 #include "FGameInstance.h"
 #include "FBuffManager.h"
+#include "FRoomManager.h"
 
 AFBuffManager * UFGameInstance::GetBuffManager()
 {
@@ -11,4 +12,14 @@ AFBuffManager * UFGameInstance::GetBuffManager()
 		BuffManager = world->SpawnActor<AFBuffManager>(FVector::ZeroVector, FRotator::ZeroRotator);
 	}
 	return BuffManager;
+}
+
+AFRoomManager * UFGameInstance::GetRoomManager()
+{
+	if (nullptr == RoomManager)
+	{
+		UWorld* world = GetWorld();
+		RoomManager = world->SpawnActor<AFRoomManager>(FVector::ZeroVector, FRotator::ZeroRotator);
+	}
+	return RoomManager;
 }

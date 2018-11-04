@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
+#include "FRoomTemplate.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -10,10 +11,17 @@ UCLASS()
 class FALLING2_API AFRoomManager : public AActor
 {
 	GENERATED_BODY()
+
+private:
+	// All the template rooms
+	TMap<ERoomType, TArray<AFRoomTemplate*> > RoomTemplates;
+
 	
 public:	
 	// Sets default values for this actor's properties
 	AFRoomManager();
+
+	static void AddRoomTemplate(AFRoomTemplate* roomTemplate);
 
 protected:
 	// Called when the game starts or when spawned
@@ -22,6 +30,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Get room manager singleton
+	static AFRoomManager* GetRoomManager(AActor* caller);
 
 	
 	

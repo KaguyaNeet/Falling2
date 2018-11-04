@@ -16,9 +16,11 @@ class FALLING2_API UFGameInstance : public UGameInstance
 	
 private:
 	class AFBuffManager* BuffManager = nullptr;
+	class AFRoomManager* RoomManager = nullptr;
 
 public:
 	class AFBuffManager* GetBuffManager();
+	class AFRoomManager* GetRoomManager();
 	
 	
 };
