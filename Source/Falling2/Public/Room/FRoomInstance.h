@@ -11,9 +11,19 @@ class FALLING2_API AFRoomInstance : public AActor
 {
 	GENERATED_BODY()
 	
+private:
+	// The template of this room
+	class AFRoomTemplate* RoomTemplate = nullptr;
+
 public:	
 	// Sets default values for this actor's properties
 	AFRoomInstance();
+
+	// Initialize this room
+	void Initialize(class AFRoomTemplate* room);
+
+	// Get all portals of this room
+	TArray<class AFRoomPortal*> GetAllRoomPortals();
 
 protected:
 	// Called when the game starts or when spawned

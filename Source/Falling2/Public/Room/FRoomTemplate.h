@@ -8,11 +8,23 @@
 #include "FRoomTemplate.generated.h"
 
 UENUM(BlueprintType)
-enum class ERoomType : uint8
+enum class EMapType : uint8
 {
 	ENormal,
 
 	ESpaceStation UMETA(DisplayName = "SpaceStation"),
+
+	EMAX
+};
+
+UENUM(BlueprintType)
+enum class ERoomType : uint8
+{
+	ENormal,
+
+	EStartingRoom UMETA(DisplayName = "StartingRoom"),
+	EBossRoom UMETA(DisplayName = "BossRoom"),
+	EReward UMETA(DisplayName = "RewardRoom"),
 
 	EMAX
 };
@@ -23,6 +35,9 @@ class FALLING2_API AFRoomTemplate : public AActor
 	GENERATED_BODY()
 
 public:
+	// Type of this map
+	EMapType MapType = EMapType::ENormal;
+
 	// Type of this room template
 	ERoomType RoomType = ERoomType::ENormal;
 

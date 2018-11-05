@@ -1,36 +1,25 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "FRoomInstance.h"
-#include "FRoomTemplate.h"
+#include "FMap.h"
 
 
 // Sets default values
-AFRoomInstance::AFRoomInstance()
+AFMap::AFMap()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-void AFRoomInstance::Initialize(AFRoomTemplate * room)
-{
-	RoomTemplate = room;
-}
-
-TArray<class AFRoomPortal*> AFRoomInstance::GetAllRoomPortals()
-{
-	return RoomTemplate->RoomPortals;
-}
-
 // Called when the game starts or when spawned
-void AFRoomInstance::BeginPlay()
+void AFMap::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AFRoomInstance::Tick(float DeltaTime)
+void AFMap::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
